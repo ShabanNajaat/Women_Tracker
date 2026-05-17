@@ -1,0 +1,2 @@
+"import 'package:flutter/material.dart';\n\n/// Soft Premium Minimalism — canonical hex palette (aligned with web CSS).\nabstract final class GlowTokens {\n  /// Main lavender — primary actions, highlights.\n  static const Color lavender = Color(0xFFB8
+<truncated 1684 bytes>

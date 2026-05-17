@@ -1,0 +1,5 @@
+
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+"                // Generate all dates in range\n                List<String> rangeDates = [];\n                for (int i = 0; i <= end.difference(start).inDays; i++) {\n                  rangeDates.add(DateFormat('yyyy-MM-dd').format(start.add(Duration(d
+<truncated 139 bytes>

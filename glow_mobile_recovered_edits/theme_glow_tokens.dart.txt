@@ -1,0 +1,11 @@
+
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+  static const Color blue = Color(0xFF4F6DFF);
+  static const List<Color> purpleBlueGradient = [lavender, blue];
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+"import 'package:flutter/material.dart';\n\n/// Soft Premium Minimalism — canonical hex palette (aligned with web CSS).\nabstract final class GlowTokens {\n  /// Main lavender — primary actions, highlights.\n  static const Color lavender = Color(0xFFB8
+<truncated 1682 bytes>
+
+--- multi_replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---

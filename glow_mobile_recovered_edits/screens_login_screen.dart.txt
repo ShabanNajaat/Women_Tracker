@@ -1,0 +1,13 @@
+
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+"                        Text(\n                          _isLoginMode ? 'Welcome back' : 'Join Glow',\n                          textAlign: TextAlign.center,\n                          style: tt.headlineMedium?.copyWith(\n                            fontW
+<truncated 4137 bytes>
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+"    return Scaffold(\n      backgroundColor: Colors.transparent,\n      appBar: AppBar(\n        backgroundColor: Colors.transparent,\n        elevation: 0,\n        actions: [\n          IconButton(\n            icon: Icon(LucideIcons.settings, color: Co
+<truncated 190 bytes>
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+"  void _showSettingsDialog() {\n    final controller = TextEditingController(text: ApiService.baseUrl.replaceAll('/api', ''));\n    showDialog(\n      context: context,\n      builder: (context) => AlertDialog(\n        title: const Text('Developer Settin
+<truncated 1354 bytes>

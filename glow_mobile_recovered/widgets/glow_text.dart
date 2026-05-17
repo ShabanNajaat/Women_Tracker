@@ -1,0 +1,2 @@
+"import 'package:flutter/material.dart';\n\n/// A text widget that pulses its color or shows a shimmering gradient effect.\nclass GlowText extends StatefulWidget {\n  final String text;\n  final TextStyle? style;\n  final List<Color> colors;\n\n  const Glo
+<truncated 1503 bytes>

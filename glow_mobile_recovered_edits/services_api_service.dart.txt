@@ -1,0 +1,20 @@
+
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+"  Future<void> awardPoints(int points) async {\n    try {\n      final res = await http.post(\n        Uri.parse('$baseUrl/auth/award-points'),\n        headers: headers,\n        body: jsonEncode({'points': points}),\n      );\n      if (res.statusCode =
+<truncated 1959 bytes>
+
+--- multi_replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+"  Future<bool> togglePeriodDay(String date) async {\n    try {\n      final res = await http.post(\n        Uri.parse('$baseUrl/tracking/period-days/toggle'),\n        headers: headers,\n        body: jsonEncode({'date': date}),\n      );\n      return re
+<truncated 504 bytes>
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+"  static String? _manualBaseUrl;\n\n  /// Override with `--dart-define=API_BASE_URL=http://YOUR_LAN_IP:8081/api` on a physical device.\n  /// Android emulator uses host loopback via `10.0.2.2` (localhost on the machine would not reach the API).\n  static 
+<truncated 862 bytes>
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+"  Future<void> init() async {\n    final prefs = await SharedPreferences.getInstance();\n    _manualBaseUrl = prefs.getString('glow_manual_api_url');\n    _token = prefs.getString('x-auth-token');\n    _persistedUserId = prefs.getString(_prefsUserId);\n  
+<truncated 98 bytes>

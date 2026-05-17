@@ -1,0 +1,14 @@
+
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\186feb35-cb5d-4b89-9d8d-7bb436788b9b\.system_generated\logs\overview.txt ---
+"  }\n\n  /// Switch to a specific theme mode and persist the choice.\n  Future<void> setTheme(ThemeMode mode) async {\n    final prefs = await SharedPreferences.getInstance();\n    themeNotifier.value = mode;\n    await prefs.setBool('isDark', mode == The
+<truncated 19 bytes>
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+  Future<void> init() async {
+    final prefs = await SharedPreferences.getInstance();
+    final isDark = prefs.getBool('isDark') ?? true; // default to dark mode
+    themeNotifier.value = isDark ? ThemeMode.dark : ThemeMode.light;
+  }
+
+--- multi_replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---

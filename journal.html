@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Journals - Glow Wellness</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="web-theme.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="api.js"></script>
+    <style>
+        .journal-container {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .journal-card {
+            padding: 20px 20px 18px;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        @media (hover: hover) {
+            .journal-card:hover {
+                border-color: rgba(179, 85, 115, 0.18);
+            }
+        }
+
+        .date-badge {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .tag-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .tag {
+            padding: 5px 10px;
+            border-radius: var(--radius-sm);
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .tag-mood {
+            background: rgba(92, 109, 140, 0.12);
+            color: var(--secondary);
+        }
+
+        .tag-symptom {
+            background: var(--primary-muted);
+            color: var(--primary-dark);
+        }
+
+        .tag-flow {
+            background: rgba(13, 148, 136, 0.12);
+            color: var(--accent);
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+            background: none;
+            border: none;
+        }
+
+        .delete-btn:hover {
+            color: #DC2626;
+            background: rgba(220, 38, 38, 0.08);
+        }
+
+        .empty-state, .loading-state {
+            text-align: center;
+            padding: 56px 20px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .journal-body {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.55;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container animate-in">
+        <header class="top-header">
+            <a href="settings.html" class="profile-trigger" aria-label="Settings">
+                <i data-lucide="user"></i>
+            </a>
+        </header>
+
+        <header class="page-header">
+            <p class="page-eyebrow">History</p>
+            <h1 class="page-title">Journal</h1>
+            <p class="page-subtitle">Review past entries and how you felt.</p>
+        </header>
+
+        <main class="page-main">
+            <div id="journal-list" class="journal-container">
+                <div class="loading-state glass" style="padding: 48px;">
+                    <div class="spinner" style="margin-bottom: 16px;"></div>
+                    <p>Loading entries…</p>
+                </div>
+            </div>
+        </main>
+
+        <nav class="nav-container glass" aria-label="Main">
+            <a href="index.html" class="nav-item">
+                <i data-lucide="layout-dashboard"></i>
+                <span>Home</span>
+            </a>
+            <a href="calendar.html" class="nav-item">
+                <i data-lucide="calendar"></i>
+                <span>Calendar</span>
+            </a>
+            <a href="logs.html" class="nav-item">
+                <i data-lucide="activity"></i>
+                <span>Log</span>
+            </a>
+            <a href="tips.html" class="nav-item">
+                <i data-lucide="sparkles"></i>
+                <span>Tips</span>
+            </a>
+            <a href="chat.html" class="nav-item">
+                <i data-lucide="message-circle"></i>
+                <span>Chat</span>
+            </a>
+            <a href="community.html" class="nav-item">
+                <i data-lucide="users"></i>
+                <span>Community</span>
+            </a>
+        </nav>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        async function loadJournals() {
+            const list = document.getElementById('journal-list');
+            const entries = await api.getLogs();
+
+            if (!entries || entries.length === 0) {
+                list.innerHTML = `
+                    <div class="glass empty-state">
+                        <i data-lucide="book-open" style="width: 40px; height: 40px; margin-bottom: 16px; opacity: 0.45;"></i>
+                        <p style="max-width: 260px; margin: 0 auto;">No journal entries yet. Log a day to see it here.</p>
+                        <a href="logs.html" class="btn-primary" style="display: inline-flex; width: auto; margin-top: 24px; text-decoration: none; padding-left: 28px; padding-right: 28px;">New entry</a>
+                    </div>
+                `;
+                lucide.createIcons();
+                return;
+            }
+
+            list.innerHTML = entries.map(entry => `
+                <article class="glass journal-card animate-in">
+                    <span class="date-badge">${new Date(entry.date + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                    <button type="button" class="delete-btn" onclick="deleteEntry('${entry.date}')" aria-label="Delete entry">
+                        <i data-lucide="trash-2" style="width: 18px; height: 18px;"></i>
+                    </button>
+                    <div class="tag-group">
+                        ${entry.mood ? `<span class="tag tag-mood">${entry.mood}</span>` : ''}
+                        ${entry.flow ? `<span class="tag tag-flow">${entry.flow}</span>` : ''}
+                        ${(entry.symptoms || []).map(s => `<span class="tag tag-symptom">${s}</span>`).join('')}
+                    </div>
+                    <p class="journal-body">${entry.notes || '<em style="color: var(--text-muted);">No notes</em>'}</p>
+                </article>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        async function deleteEntry(dateId) {
+            if (confirm('Delete this journal entry?')) {
+                const res = await api.deleteLog(dateId);
+                if (res.msg === 'Log removed') {
+                    loadJournals();
+                } else {
+                    alert('Could not delete: ' + (res.msg || 'Unknown error'));
+                }
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', loadJournals);
+    </script>
+</body>
+
+</html>

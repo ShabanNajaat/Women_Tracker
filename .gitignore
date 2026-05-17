@@ -1,0 +1,16 @@
+# Local secrets — never commit
+.env
+.env.local
+server/.env
+server/.env.local
+*.pem
+
+# Dependencies & builds
+server/node_modules/
+glow_mobile/build/
+glow_mobile/.dart_tool/
+glow_mobile/.flutter-plugins-dependencies
+
+# Optional bundled web (build locally with scripts/build-for-live.ps1 -CopyToServer)
+server/public/*
+!server/public/.gitkeep

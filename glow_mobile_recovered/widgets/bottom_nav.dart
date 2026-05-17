@@ -1,0 +1,2 @@
+"import 'package:flutter/material.dart';\nimport 'package:lucide_icons/lucide_icons.dart';\n\nclass BottomNav extends StatelessWidget {\n  final int currentIndex;\n  final ValueChanged<int> onTap;\n\n  const BottomNav({Key? key, required this.currentIndex,
+<truncated 762 bytes>

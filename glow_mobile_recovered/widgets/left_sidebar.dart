@@ -1,0 +1,2 @@
+"import 'package:flutter/material.dart';\nimport 'package:lucide_icons/lucide_icons.dart';\n\nclass LeftSidebar extends StatelessWidget {\n  final int currentIndex;\n  final ValueChanged<int> onTap;\n\n  const LeftSidebar({Key? key, required this.currentIn
+<truncated 1452 bytes>

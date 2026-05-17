@@ -1,0 +1,27 @@
+
+
+--- multi_replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+"  Future<void> _getAiReflection(String dateStr, String notes) async {\n    if (notes.isEmpty) return;\n    setState(() => _loadingReflections.add(dateStr));\n    try {\n      final reflection = await _llm.reflect(notes);\n      if (mounted) {\n        set
+<truncated 236 bytes>
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+"    }\n  }\n\n  Future<void> _getAiReflection(String dateStr, String notes) async {\n    if (notes.isEmpty) return;\n    setState(() => _loadingReflections.add(dateStr));\n    try {\n      final reflection = await _llm.reflect(notes);\n      if (mounted) 
+<truncated 298 bytes>
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+      }
+    } catch (e) {
+      debugPrint('Error fetching logs: $e');
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+  }
+}

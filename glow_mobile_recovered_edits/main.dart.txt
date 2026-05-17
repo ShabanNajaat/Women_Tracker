@@ -1,0 +1,22 @@
+
+
+--- multi_replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+"import 'package:flutter/material.dart';\nimport 'package:lucide_icons/lucide_icons.dart';\nimport 'services/api_service.dart';\nimport 'services/theme_service.dart';\nimport 'screens/splash_screen.dart';\nimport 'widgets/home_scaffold.dart';\n\nvoid main(
+<truncated 1294 bytes>
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+    return const HomeScaffold();
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+import 'widgets/home_scaffold.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+      home: const SplashScreen(),
+    );
+  }
+}

@@ -1,0 +1,2 @@
+"import 'package:flutter/material.dart';\nimport '../theme/glow_tokens.dart';\n\n/// A shimmer skeleton placeholder that pulses between two dark tones.\n/// Use [SkeletonCard] for card-shaped loaders and [SkeletonLine] for text lines.\nclass _ShimmerPainte
+<truncated 3672 bytes>

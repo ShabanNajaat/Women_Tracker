@@ -1,0 +1,8 @@
+# Deploy folder: glow_mobile/build/web (build locally first — see DEPLOY_LIVE.md).
+[build]
+  publish = "build/web"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

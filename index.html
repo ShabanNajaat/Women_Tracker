@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glow - Wellness Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="web-theme.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="api.js"></script>
+    <script>
+        if (localStorage.getItem('glow_session_active') !== 'true') {
+            window.location.href = 'login.html';
+        }
+    </script>
+</head>
+
+<body>
+    <div class="container animate-in">
+        <header class="top-header">
+            <a href="settings.html" class="profile-trigger" aria-label="Settings">
+                <i data-lucide="user"></i>
+            </a>
+        </header>
+
+        <header class="page-header">
+            <p class="page-eyebrow">Dashboard</p>
+            <h1 class="page-title">Hello, <span id="greeting-name">Beautiful</span></h1>
+            <p class="page-subtitle" id="cycle-subtitle">Loading your cycle data...</p>
+        </header>
+
+        <main class="page-main">
+            <section class="glass cycle-card-hero">
+                <div class="cycle-ring-pro" id="cycle-ring">
+                    <span style="font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em;" id="ring-label">Period in</span>
+                    <span style="font-size: 30px; font-weight: 700; letter-spacing: -0.02em; color: var(--primary);" id="ring-value">--</span>
+                </div>
+                <h2 id="phase-name" style="font-size: 18px; font-weight: 700; margin-bottom: 6px; color: var(--text-main);">Loading...</h2>
+                <p id="phase-desc" style="font-size: 14px; color: var(--text-muted); line-height: 1.5;">Calculating your cycle phase</p>
+            </section>
+
+            <div class="action-grid">
+                <div class="glass action-tile" role="button" tabindex="0"
+                    onclick="window.location.href='calendar.html'"
+                    onkeydown="if(event.key==='Enter')window.location.href='calendar.html'">
+                    <i data-lucide="droplet" style="color: var(--primary);"></i>
+                    <span>Log period</span>
+                </div>
+                <div class="glass action-tile" role="button" tabindex="0"
+                    onclick="window.location.href='logs.html'"
+                    onkeydown="if(event.key==='Enter')window.location.href='logs.html'">
+                    <i data-lucide="smile" style="color: var(--secondary);"></i>
+                    <span>Log mood</span>
+                </div>
+            </div>
+
+            <section class="glass insight-card" style="padding: 20px 22px;">
+                <h3>
+                    <i data-lucide="sparkles" style="color: var(--accent); width: 18px; height: 18px;"></i>
+                    Daily insight
+                </h3>
+                <p id="daily-wellness-tip">Stay hydrated and take a moment for yourself today.</p>
+            </section>
+        </main>
+
+        <nav class="nav-container glass" aria-label="Main">
+            <a href="index.html" class="nav-item active">
+                <i data-lucide="layout-dashboard"></i>
+                <span>Home</span>
+            </a>
+            <a href="calendar.html" class="nav-item">
+                <i data-lucide="calendar"></i>
+                <span>Calendar</span>
+            </a>
+            <a href="logs.html" class="nav-item">
+                <i data-lucide="activity"></i>
+                <span>Log</span>
+            </a>
+            <a href="tips.html" class="nav-item">
+                <i data-lucide="sparkles"></i>
+                <span>Tips</span>
+            </a>
+            <a href="chat.html" class="nav-item">
+                <i data-lucide="message-circle"></i>
+                <span>Chat</span>
+            </a>
+            <a href="community.html" class="nav-item">
+                <i data-lucide="users"></i>
+                <span>Community</span>
+            </a>
+        </nav>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        const phases = {
+            menstrual: { name: 'Menstrual phase', desc: 'Rest and nurture your body during this time', color: 'var(--primary)' },
+            follicular: { name: 'Follicular phase', desc: 'Energy is rising — a good window for new goals', color: 'var(--secondary)' },
+            ovulation: { name: 'Ovulation phase', desc: 'Peak energy and focus', color: 'var(--accent)' },
+            luteal: { name: 'Luteal phase', desc: 'Ease back and prioritise self-care', color: '#C27A5A' }
+        };
+
+        function getPhase(cycleDay, periodLength) {
+            if (cycleDay <= periodLength) return phases.menstrual;
+            if (cycleDay <= 13) return phases.follicular;
+            if (cycleDay <= 16) return phases.ovulation;
+            return phases.luteal;
+        }
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            if (!session.isAuthenticated()) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const user = session.getUser();
+            if (user.name) {
+                document.getElementById('greeting-name').innerText = user.name.split(' ')[0];
+            }
+
+            const profile = await api.getProfile();
+            const periodDays = await api.getPeriodDays();
+            const cycleLength = profile.cycleLength || 28;
+            const periodLength = profile.periodLength || 5;
+
+            const today = new Date();
+            const todayStr = today.toISOString().split('T')[0];
+
+            if (periodDays.length > 0) {
+                const sorted = [...periodDays].sort();
+                const lastPeriodDate = new Date(sorted[sorted.length - 1] + 'T00:00:00');
+                const diffMs = today - lastPeriodDate;
+                const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+                const cycleDay = (diffDays % cycleLength) + 1;
+                const daysUntilPeriod = cycleLength - diffDays;
+
+                const phase = getPhase(cycleDay, periodLength);
+
+                document.getElementById('ring-value').innerText = daysUntilPeriod > 0 ? `${daysUntilPeriod} days` : 'Today';
+                document.getElementById('ring-label').innerText = daysUntilPeriod > 0 ? 'Period in' : 'Period starts';
+                document.getElementById('phase-name').innerText = phase.name;
+                document.getElementById('phase-desc').innerText = phase.desc;
+                document.getElementById('cycle-ring').style.borderColor = phase.color;
+
+                const dateOpts = { month: 'long', day: 'numeric' };
+                document.getElementById('cycle-subtitle').innerText =
+                    `Today is ${today.toLocaleDateString('en-US', dateOpts)} — cycle day ${cycleDay}`;
+            } else {
+                document.getElementById('ring-value').innerText = '—';
+                document.getElementById('ring-label').innerText = 'No data';
+                document.getElementById('phase-name').innerText = 'Welcome';
+                document.getElementById('phase-desc').innerText = 'Log your first period to start tracking';
+                document.getElementById('cycle-subtitle').innerText =
+                    `Today is ${today.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}`;
+            }
+
+            const tips = [
+                "Drink plenty of water today to stay hydrated and support your body.",
+                "Take a 5-minute deep breathing break to reduce stress.",
+                "A handful of nuts or seeds can provide steady energy and magnesium.",
+                "Gentle stretching can help circulation and mood.",
+                "Try adding leafy greens to your next meal for key micronutrients.",
+                "Listen to your body and rest when you need to.",
+                "Take a moment of gratitude before sleep tonight.",
+                "Aim for 7–8 hours of sleep for hormonal balance.",
+                "Consider easing caffeine if you feel anxious or in your luteal phase.",
+                "A short walk outside can support serotonin.",
+                "Warm herbal teas like ginger or chamomile can be soothing.",
+                "Stay consistent with vitamins your clinician has recommended.",
+                "Journaling can help clear mental clutter.",
+                "Connecting with someone you trust can lift your mood.",
+                "Healthy fats like avocado support hormone production."
+            ];
+
+            const dateSeed = today.getFullYear() * 1000 + (today.getMonth() + 1) * 100 + today.getDate();
+            const tipIndex = dateSeed % tips.length;
+            document.getElementById('daily-wellness-tip').innerText = tips[tipIndex];
+        });
+    </script>
+</body>
+
+</html>

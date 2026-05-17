@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<!-- Web shell for Dr. Najaat — POST /api/chat (same OpenAI/Gemini path as glow_mobile). -->
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat with Dr. Najaat — Glow Wellness</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="web-theme.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="api.js"></script>
+    <style>
+        /* Page-level glass: visible even on file:// — matches Glow palette */
+        html {
+            min-height: 100%;
+        }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: var(--bg-main);
+            background-attachment: fixed;
+        }
+
+        .preview-note {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            margin: 0;
+            padding: 10px 18px;
+            font-family: var(--font-sans);
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            text-align: center;
+            background: var(--bg-elevated);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .preview-note code {
+            font-family: ui-monospace, monospace;
+            font-size: 10px;
+            font-weight: 500;
+            letter-spacing: 0;
+            text-transform: none;
+            padding: 3px 8px;
+            border-radius: var(--radius-sm);
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+        }
+
+        .chat-page-glass {
+            background: var(--bg-card) !important;
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-md);
+        }
+
+        .dr-header-glass {
+            margin: 0 16px 8px;
+            padding: 16px 18px !important;
+            background: var(--bg-card) !important;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .dr-header-glass h1 {
+            font-family: var(--font-display, Georgia, serif);
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+
+        .input-area-glass {
+            background: var(--bg-card);
+            border-radius: var(--radius-pill);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .chat-container {
+            height: calc(100vh - 220px);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            overflow-y: auto;
+            padding: 10px;
+            scroll-behavior: smooth;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 12px 18px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.5;
+            position: relative;
+        }
+
+        .message.ai {
+            align-self: flex-start;
+            background: var(--bg-elevated) !important;
+            color: var(--text-main);
+            border: 1px solid var(--glass-border);
+            border-bottom-left-radius: 4px;
+            box-shadow: var(--shadow-xs);
+        }
+
+        .message.user {
+            align-self: flex-end;
+            background: var(--primary);
+            color: var(--text-on-primary);
+            border-bottom-right-radius: 4px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .input-area {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 500px;
+            display: flex;
+            gap: 10px;
+            padding: 10px;
+        }
+
+        input.chat-input {
+            flex: 1;
+            border: none;
+            padding: 15px 20px;
+            font-family: inherit;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .send-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: var(--text-on-primary);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .typing-row {
+            display: none;
+            align-items: center;
+            gap: 12px;
+            margin: 8px 14px 12px;
+            padding: 12px 16px;
+            max-width: 520px;
+            margin-left: auto;
+            margin-right: auto;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .typing-spinner {
+            width: 22px;
+            height: 22px;
+            border: 3px solid var(--primary-muted);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.75s linear infinite;
+            flex-shrink: 0;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <p class="preview-note" role="note">Web experience · API <code>localhost:8081</code> · Flutter app: <code>cd glow_mobile && flutter run -d chrome</code></p>
+    <div class="container animate-in">
+        <header class="top-header">
+            <a href="settings.html" class="profile-trigger">
+                <i data-lucide="user"></i>
+            </a>
+        </header>
+
+        <header class="dr-header-glass" style="display: flex; align-items: center; gap: 15px;">
+            <div
+                style="width: 50px; height: 50px; background: linear-gradient(145deg, var(--primary-dark), var(--primary)); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid var(--bg-elevated); box-shadow: var(--shadow-sm);">
+                <i data-lucide="bot-message-square" style="color: white; width: 24px; height: 24px;"></i>
+            </div>
+            <div>
+                <h1 style="font-size: 24px;">Dr. Najaat</h1>
+                <p style="color: var(--text-muted); font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;">Wellness companion</p>
+            </div>
+        </header>
+
+        <main style="padding: 10px;">
+            <div id="chat-window" class="chat-container chat-page-glass"></div>
+            <div id="typing" class="typing-row" aria-live="polite">
+                <div class="typing-spinner" aria-hidden="true"></div>
+                <span id="typing-status">Dr. Najaat is thinking…</span>
+            </div>
+        </main>
+
+        <div class="input-area input-area-glass">
+            <input type="text" id="user-input" class="glass chat-input" placeholder="Ask me anything...">
+            <button id="send-msg" class="send-btn">
+                <i data-lucide="send"></i>
+            </button>
+        </div>
+
+        <nav class="nav-container glass">
+            <a href="index.html" class="nav-item">
+                <i data-lucide="layout-dashboard"></i>
+                <span>Home</span>
+            </a>
+            <a href="calendar.html" class="nav-item">
+                <i data-lucide="calendar"></i>
+                <span>Calendar</span>
+            </a>
+            <a href="logs.html" class="nav-item">
+                <i data-lucide="activity"></i>
+                <span>Log</span>
+            </a>
+            <a href="tips.html" class="nav-item">
+                <i data-lucide="sparkles"></i>
+                <span>Tips</span>
+            </a>
+            <a href="chat.html" class="nav-item active">
+                <i data-lucide="message-circle"></i>
+                <span>Chat</span>
+            </a>
+            <a href="community.html" class="nav-item">
+                <i data-lucide="users"></i>
+                <span>Community</span>
+            </a>
+        </nav>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        const chatWindow = document.getElementById('chat-window');
+        const userInput = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-msg');
+        const typingIndicator = document.getElementById('typing');
+        const typingStatus = document.getElementById('typing-status');
+
+        function addMessage(text, sender) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${sender}`;
+            msgDiv.innerText = text;
+            chatWindow.appendChild(msgDiv);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        // Quick reply chips
+        const quickReplies = [
+            "How to manage cramps?",
+            "What phase am I in?",
+            "Tips for better sleep",
+            "Foods for PMS relief",
+            "How to track ovulation?"
+        ];
+
+        function showQuickReplies() {
+            const container = document.createElement('div');
+            container.style.cssText = 'display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0;';
+            container.className = 'quick-replies';
+
+            quickReplies.forEach(text => {
+                const chip = document.createElement('button');
+                chip.innerText = text;
+                chip.style.cssText = 'padding: 8px 14px; border-radius: 20px; background: var(--primary-light); color: var(--primary-dark); border: 1px solid var(--primary); font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.2s;';
+                chip.onmouseover = () => { chip.style.background = 'var(--primary)'; chip.style.color = 'white'; };
+                chip.onmouseout = () => { chip.style.background = 'var(--primary-light)'; chip.style.color = 'var(--primary-dark)'; };
+                chip.onclick = () => {
+                    container.remove();
+                    addMessage(text, 'user');
+                    getAIResponse(text);
+                };
+                container.appendChild(chip);
+            });
+            chatWindow.appendChild(container);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function fallbackLocalReply(userText) {
+            const lowerText = userText.toLowerCase();
+            let response = '';
+            const healthKeywords = ['health', 'wellness', 'period', 'cycle', 'pain', 'diet', 'exercise', 'sleep', 'mood', 'symptom', 'doctor', 'medical', 'body', 'physical', 'mental', 'help', 'tips', 'weak', 'sick', 'well', 'feeling'];
+            const isHealthRelated = healthKeywords.some(kw => lowerText.includes(kw)) ||
+                Object.keys(knowledgeBase).some(pattern => new RegExp(pattern, 'i').test(lowerText));
+
+            if (!isHealthRelated) {
+                response = "I'm sorry, I'm specifically trained to assist with health and wellness questions within Glow. I am unable to discuss other topics. How can I help you with your wellness journey today? 💜";
+            } else {
+                response = "That's a great question! While I can provide general wellness guidance, for specific medical concerns I always recommend consulting a healthcare professional. Is there something else I can help with? 💜";
+                for (const [pattern, reply] of Object.entries(knowledgeBase)) {
+                    const regex = new RegExp(pattern, 'i');
+                    if (regex.test(lowerText)) {
+                        response = reply;
+                        break;
+                    }
+                }
+            }
+            return response;
+        }
+
+        async function initChat() {
+            if (!session.isAuthenticated()) {
+                addMessage('Log in via Glow (login.html) so Dr. Najaat can reply through your server (OpenAI/Gemini when configured). Offline tips appear only if the API is unreachable.', 'ai');
+                return;
+            }
+            try {
+                const hist = await api.getChatHistory();
+                if (!hist.length) {
+                    addMessage("Hello! I'm Dr. Najaat — a calm, judgment-free space to talk about wellness and your cycle. What's on your heart today?", 'ai');
+                } else {
+                    hist.forEach((m) => {
+                        const t = (m.text || '').trim();
+                        if (!t) return;
+                        addMessage(t, m.role === 'ai' ? 'ai' : 'user');
+                    });
+                }
+            } catch (e) {
+                console.error(e);
+                addMessage('Could not load chat history. Check that the Glow API is running (see api.js API_BASE).', 'ai');
+            }
+        }
+
+        async function getAIResponse(userText) {
+            typingIndicator.style.display = 'flex';
+            typingStatus.textContent = 'Dr. Najaat is writing a reply…';
+
+            let responseText = '';
+
+            if (session.isAuthenticated()) {
+                typingStatus.textContent = 'Sending to your Glow server…';
+                try {
+                    const res = await api.sendChatMessage({ role: 'user', text: userText });
+                    if (res && res.aiResponse) {
+                        responseText = res.aiResponse;
+                        if (res.aiWarning) {
+                            responseText += '\n\n— ' + res.aiWarning;
+                        } else if (res.aiNotice) {
+                            responseText += '\n\n— ' + res.aiNotice;
+                        }
+                    } else if (res && res.msg) {
+                        responseText = `(${res.msg}) ${fallbackLocalReply(userText)}`;
+                    }
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+
+            if (!responseText) {
+                responseText = fallbackLocalReply(userText);
+            }
+
+            typingIndicator.style.display = 'none';
+            typingStatus.textContent = 'Dr. Najaat is thinking…';
+            addMessage(responseText, 'ai');
+        }
+
+        (async () => {
+            await initChat();
+            setTimeout(showQuickReplies, 400);
+        })();
+
+        // Offline fallback only (when API unavailable or logged out)
+        const knowledgeBase = {
+            'cramp|pain|hurt': "Cramps are very common during your period. Here are some tips:\n\n• Apply a warm compress or heating pad to your lower abdomen\n• Try gentle yoga poses like Child's Pose or Cat-Cow\n• Stay hydrated — dehydration can worsen cramps\n• Magnesium-rich foods (dark chocolate, bananas) can help\n• Over-the-counter pain relief like ibuprofen works well\n\nIf cramps are severe or debilitating, please consult your doctor.",
+            'mood|sad|anxious|stress|depress': "Hormonal changes throughout your cycle can significantly impact mood. Here's what can help:\n\n• Light exercise releases endorphins — even a short walk helps\n• Practice deep breathing or meditation for 5-10 minutes\n• Journaling your feelings helps process emotions\n• Social connection — talk to a friend or loved one\n• Reduce caffeine and sugar, especially in your luteal phase\n\nRemember, it's okay to not be okay. You're doing great! 💜",
+            'sleep|insomnia|tired|fatigue|rest': "Quality sleep is crucial for hormonal balance. Try these tips:\n\n• Keep a consistent sleep schedule (7-8 hours)\n• Avoid screens 1 hour before bed — blue light disrupts melatonin\n• Try chamomile or valerian tea in the evening\n• Keep your room cool (65-68°F / 18-20°C)\n• Magnesium supplements can improve sleep quality\n• Gentle stretching before bed relaxes your body",
+            'food|eat|diet|nutrition|pms': "Nutrition plays a huge role in managing cycle symptoms:\n\n• Iron-rich foods during menstruation: spinach, red meat, lentils\n• Omega-3 fatty acids reduce inflammation: salmon, walnuts, flaxseed\n• Magnesium for cramps: dark chocolate, almonds, avocado\n• Vitamin B6 for PMS: chickpeas, sweet potatoes, bananas\n• Reduce sodium to minimize bloating\n• Stay hydrated — aim for 8 glasses of water daily",
+            'ovulat|fertile|conceiv|pregnan': "Understanding ovulation is key to reproductive health:\n\n• Ovulation typically occurs around day 14 of a 28-day cycle\n• Your fertile window is 5 days before and 1 day after ovulation\n• Signs of ovulation: clear cervical mucus, mild pelvic pain, slightly elevated temperature\n• Use the Calendar page to track and predict your ovulation day\n\nGlow marks your estimated ovulation day with a purple marker on the calendar!",
+            'exercise|workout|gym|yoga': "Exercise is powerful for cycle wellness, but timing matters:\n\n• Menstrual phase: Gentle movement — walking, yoga, stretching\n• Follicular phase: Energy rises — HIIT, strength training, cardio\n• Ovulation: Peak energy — your best workouts happen here\n• Luteal phase: Moderate activity — pilates, swimming, cycling\n\nAlways listen to your body and rest when needed.",
+            'period|menstr|flow|bleed': "Here's what's normal for periods:\n\n• Average cycle: 21-35 days\n• Average period length: 3-7 days\n• Flow varies — light to heavy is normal\n• Track your flow using the Log page to spot patterns\n\nLog your period on the Calendar page to get accurate predictions!",
+            'water|hydrat|drink': "Staying hydrated is essential, especially during your period:\n\n• Aim for 8-10 glasses (2-2.5 liters) daily\n• Increase intake during menstruation to combat fatigue\n• Warm water with lemon supports digestion\n• Reduce coffee and alcohol which dehydrate\n• Coconut water replenishes electrolytes naturally",
+            'headache|migraine': "Hormonal headaches are common, especially around your period:\n\n• Stay hydrated and eat regular meals\n• Apply a cold compress to your forehead\n• Try peppermint oil on your temples\n• Magnesium supplements may prevent menstrual migraines\n• Get enough sleep — irregular sleep triggers headaches\n\nIf migraines are severe or frequent, see a healthcare provider.",
+            'bloat|swollen|weight': "Bloating is very common during PMS and menstruation:\n\n• Reduce salt and processed foods\n• Drink peppermint or ginger tea\n• Eat potassium-rich foods: bananas, sweet potatoes\n• Gentle walking helps move gas through your system\n• Probiotics support gut health and reduce bloating",
+            'skin|acne|breakout': "Hormonal changes can affect your skin. Stay hydrated, use gentle cleansers, and track when breakouts occur in relation to your cycle. 🌸",
+            "weak|faint|dizzy": "Feeling weak or dizzy can be related to low iron, dehydration, or hormonal shifts. Ensure you're eating iron-rich foods and drinking plenty of water. If it persists, please consult a doctor. 💜",
+            "not well|unwell|sick|not so well": "I'm sorry to hear you're not feeling well. Taking rest and staying hydrated is important. Are you experiencing specific symptoms like cramps or fatigue? 💜",
+            "hello|hi|hey": "Hi — I'm Dr. Najaat. I'm glad you're here. How are you feeling in your body today?"
+        };
+
+        sendBtn.onclick = () => {
+            const text = userInput.value.trim();
+            if (text) {
+                // Remove quick replies if present
+                const qr = chatWindow.querySelector('.quick-replies');
+                if (qr) qr.remove();
+
+                addMessage(text, 'user');
+                userInput.value = '';
+                getAIResponse(text);
+            }
+        };
+
+        userInput.onkeypress = (e) => {
+            if (e.key === 'Enter') sendBtn.click();
+        };
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Tips - Glow Wellness</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="web-theme.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="api.js"></script>
+    <style>
+        .tip-card {
+            margin-bottom: 20px;
+            padding: 25px;
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            transition: var(--transition);
+        }
+
+        .tip-card:hover {
+            transform: translateX(10px);
+            border-color: var(--primary);
+        }
+
+        .tip-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .category-pill {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container animate-in">
+        <header class="top-header">
+            <a href="settings.html" class="profile-trigger">
+                <i data-lucide="user"></i>
+            </a>
+        </header>
+
+        <header style="padding: 0 20px 10px;">
+            <h1 style="font-size: 28px; font-weight: 600;">Wellness Center</h1>
+            <p style="color: var(--text-muted);">Tips for every phase of your cycle</p>
+        </header>
+
+        <main style="padding: 10px 20px; padding-bottom: 100px;">
+            <!-- Daily Spotlight -->
+            <div class="glass"
+                style="padding: 25px; margin-bottom: 30px; background: linear-gradient(135deg, hsla(330, 85%, 65%, 0.1), hsla(260, 60%, 65%, 0.1)); border: 2px solid var(--primary-light);">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                    <div
+                        style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; color: white;">
+                        <i data-lucide="sparkles" style="width: 20px; height: 20px;"></i>
+                    </div>
+                    <h2 style="font-size: 18px; font-weight: 600;">Daily Spotlight</h2>
+                </div>
+                <p id="dynamic-daily-tip"
+                    style="font-size: 15px; line-height: 1.6; color: var(--text-main); font-weight: 400;">
+                    Loading your wellness tip for today...
+                </p>
+            </div>
+
+            <h3 style="font-size: 16px; margin-bottom: 20px; padding-left: 5px; color: var(--text-main);">Wellness
+                Guides</h3>
+            <!-- Tip 1 -->
+            <div class="glass tip-card">
+                <div class="tip-icon" style="background: hsla(330, 85%, 65%, 0.1);">
+                    <i data-lucide="droplet" style="color: var(--primary);"></i>
+                </div>
+                <div>
+                    <span class="category-pill">Period Phase</span>
+                    <h3 style="font-size: 16px; margin-bottom: 5px;">Managing Menstrual Cramps</h3>
+                    <p style="font-size: 14px; color: var(--text-muted);">Try a warm compress or gentle yoga stretches
+                        to alleviate discomfort during your flow.</p>
+                </div>
+            </div>
+
+            <!-- Tip 2 -->
+            <div class="glass tip-card">
+                <div class="tip-icon" style="background: hsla(260, 60%, 65%, 0.1);">
+                    <i data-lucide="heart" style="color: var(--secondary);"></i>
+                </div>
+                <div>
+                    <span class="category-pill"
+                        style="background: hsla(260, 60%, 65%, 0.1); color: var(--secondary);">Follicular Phase</span>
+                    <h3 style="font-size: 16px; margin-bottom: 5px;">Energy Management</h3>
+                    <p style="font-size: 14px; color: var(--text-muted);">Your energy levels are rising. This is a great
+                        time for high-intensity workouts and social activities.</p>
+                </div>
+            </div>
+
+            <!-- Tip 3 -->
+            <div class="glass tip-card">
+                <div class="tip-icon" style="background: hsla(45, 100%, 70%, 0.1);">
+                    <i data-lucide="sun" style="color: var(--accent);"></i>
+                </div>
+                <div>
+                    <span class="category-pill" style="background: hsla(45, 100%, 70%, 0.1); color: #B8860B;">Luteal
+                        Phase</span>
+                    <h3 style="font-size: 16px; margin-bottom: 5px;">Self-Care Focus</h3>
+                    <p style="font-size: 14px; color: var(--text-muted);">Prioritize sleep and reduce caffeine intake to
+                        help balance mood swings before your period arrives.</p>
+                </div>
+            </div>
+
+            <!-- Tip 4 -->
+            <div class="glass tip-card">
+                <div class="tip-icon" style="background: hsla(160, 60%, 45%, 0.1);">
+                    <i data-lucide="leaf" style="color: #2E8B57;"></i>
+                </div>
+                <div>
+                    <span class="category-pill"
+                        style="background: hsla(160, 60%, 45%, 0.1); color: #2E8B57;">Nutrition</span>
+                    <h3 style="font-size: 16px; margin-bottom: 5px;">Magnesium Rich Foods</h3>
+                    <p style="font-size: 14px; color: var(--text-muted);">Add spinach, pumpkin seeds, and dark chocolate
+                        to your diet to help reduce PMS symptoms naturally.</p>
+                </div>
+            </div>
+        </main>
+
+        <nav class="nav-container glass">
+            <a href="index.html" class="nav-item">
+                <i data-lucide="layout-dashboard"></i>
+                <span>Home</span>
+            </a>
+            <a href="calendar.html" class="nav-item">
+                <i data-lucide="calendar"></i>
+                <span>Calendar</span>
+            </a>
+            <a href="logs.html" class="nav-item">
+                <i data-lucide="activity"></i>
+                <span>Log</span>
+            </a>
+            <a href="tips.html" class="nav-item active">
+                <i data-lucide="sparkles"></i>
+                <span>Tips</span>
+            </a>
+            <a href="chat.html" class="nav-item">
+                <i data-lucide="message-circle"></i>
+                <span>Chat</span>
+            </a>
+            <a href="community.html" class="nav-item">
+                <i data-lucide="users"></i>
+                <span>Community</span>
+            </a>
+        </nav>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // Daily Tips Rotation (Shared Logic)
+        document.addEventListener('DOMContentLoaded', () => {
+            const tips = [
+                "Drink plenty of water today to stay hydrated and support your body.",
+                "Take a 5-minute deep breathing break to reduce stress.",
+                "A handful of nuts or seeds can provide great energy and magnesium.",
+                "Gentle stretching today can help improve circulation and mood.",
+                "Try incorporating leafy greens into your next meal for essential vitamins.",
+                "Listen to your body's signals and rest if you feel tired.",
+                "Practice a moment of gratitude tonight before you sleep.",
+                "Getting 7-8 hours of sleep is crucial for hormonal balance.",
+                "Limit caffeine if you're feeling anxious or during your luteal phase.",
+                "A short walk in nature can boost your serotonin levels.",
+                "Warm herbal teas like ginger or chamomile can be very soothing.",
+                "Stay consistent with your vitamins and supplements today.",
+                "Journaling your thoughts can help clear mental clutter.",
+                "Socializing with a friend can provide a great emotional lift.",
+                "Healthy fats like avocado support hormone production."
+            ];
+
+            const today = new Date();
+            const dateSeed = today.getFullYear() * 1000 + (today.getMonth() + 1) * 100 + today.getDate();
+            const tipIndex = dateSeed % tips.length;
+            document.getElementById('dynamic-daily-tip').innerText = tips[tipIndex];
+        });
+    </script>
+</body>
+
+</html>

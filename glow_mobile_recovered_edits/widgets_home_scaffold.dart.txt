@@ -1,0 +1,5 @@
+
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+"      body: Row(\n        children: [\n          if (isWide)\n            LeftSidebar(\n              currentIndex: _selectedIndex,\n              onTap: _onItemTapped,\n            ),\n          Expanded(child: _pages[_selectedIndex]),\n        ],\n     
+<truncated 4 bytes>

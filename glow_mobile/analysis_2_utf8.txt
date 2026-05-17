@@ -1,0 +1,50 @@
+﻿   info - Use 'const' with the constructor to improve performance - lib\screens\settings_details.dart:155:12 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\screens\settings_details.dart:157:14 - prefer_const_constructors
+   info - Use 'const' literals as arguments to constructors of '@immutable' classes - lib\screens\settings_details.dart:158:19 - prefer_const_literals_to_create_immutables
+   info - 'activeColor' is deprecated and shouldn't be used. Use activeThumbColor instead. This feature was deprecated after v3.31.0-2.0.pre - lib\screens\settings_details.dart:183:7 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\settings_screen.dart:50:67 - deprecated_member_use
+   info - 'activeColor' is deprecated and shouldn't be used. Use activeThumbColor instead. This feature was deprecated after v3.31.0-2.0.pre - lib\screens\settings_screen.dart:70:13 - deprecated_member_use
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\screens\settings_screen.dart:89:30 - use_build_context_synchronously
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\settings_screen.dart:98:49 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\tips_screen.dart:36:57 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\wellness_library_screen.dart:182:58 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\wellness_library_screen.dart:194:49 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\screens\wellness_library_screen.dart:214:17 - prefer_const_constructors
+   info - Use 'const' literals as arguments to constructors of '@immutable' classes - lib\screens\wellness_library_screen.dart:215:29 - prefer_const_literals_to_create_immutables
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\wellness_library_screen.dart:242:54 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\wellness_library_screen.dart:300:69 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\wellness_library_screen.dart:331:53 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\wellness_library_screen.dart:338:50 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\wellness_library_screen.dart:355:44 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\wellness_library_screen.dart:408:40 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\wellness_library_screen.dart:428:64 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\wellness_library_screen.dart:449:34 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\wellness_library_screen.dart:497:66 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\wellness_library_screen.dart:550:40 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\wellness_library_screen.dart:552:59 - deprecated_member_use
+   info - The imported package 'http_parser' isn't a dependency of the importing package - lib\services\api_service.dart:6:8 - depend_on_referenced_packages
+   info - Don't invoke 'print' in production code - lib\services\api_service.dart:38:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\api_service.dart:69:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\api_service.dart:87:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\api_service.dart:108:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\api_service.dart:122:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\api_service.dart:140:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\api_service.dart:153:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\api_service.dart:164:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\api_service.dart:180:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\api_service.dart:203:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\api_service.dart:219:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\api_service.dart:233:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\api_service.dart:254:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\api_service.dart:271:7 - avoid_print
+   info - Statements in an if should be enclosed in a block - lib\services\cycle_service.dart:105:24 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\services\cycle_service.dart:106:40 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\services\cycle_service.dart:107:40 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\services\cycle_service.dart:108:10 - curly_braces_in_flow_control_structures
+   info - Don't invoke 'print' in production code - lib\services\partner_service.dart:18:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\partner_service.dart:32:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\partner_service.dart:47:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\partner_service.dart:59:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\partner_service.dart:71:7 - avoid_print
+warning - Unused import: 'dart:io' - lib\services\reminder_service.dart:4:8 - unused_import
+

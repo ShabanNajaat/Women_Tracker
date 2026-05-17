@@ -1,0 +1,2 @@
+"import 'package:flutter/material.dart';\nimport 'package:lucide_icons/lucide_icons.dart';\nimport '../theme/glow_tokens.dart';\n\n/// A premium animated bubble representing Dr. Najaat.\n/// Features a subtle \"breathing\" scale and glow effect.\nclass AiA
+<truncated 2838 bytes>

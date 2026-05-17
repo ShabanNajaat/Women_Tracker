@@ -1,0 +1,8 @@
+
+
+--- multi_replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+"    final nextPeriodDate = lastStart.add(Duration(days: cycleLength));\n\n    return {\n      'phase': CyclePhaseInfo(name: basePhase.name, advice: advice, goal: basePhase.goal),\n      'dayInCycle': cycleDay,\n      'daysToNext': (cycleLength - (cycleDay
+<truncated 156 bytes>

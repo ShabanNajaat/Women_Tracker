@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Logs - Glow Wellness</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="web-theme.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="api.js"></script>
+
+    <style>
+        .log-section {
+            margin-bottom: 30px;
+        }
+
+        .log-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .log-card {
+            padding: 20px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .log-card i {
+            font-size: 28px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .log-card:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+            transform: scale(1.05);
+        }
+
+        .log-card.selected {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .log-card.selected i {
+            color: white !important;
+        }
+
+        .log-section h3 {
+            font-size: 16px;
+            color: var(--text-main);
+            font-weight: 700;
+        }
+
+        textarea.glass {
+            width: 100%;
+            border: 1px solid var(--glass-border);
+            padding: 15px;
+            font-family: inherit;
+            resize: none;
+            outline: none;
+            margin-top: 10px;
+            background: var(--bg-card);
+            color: var(--text-main);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container animate-in">
+        <header class="top-header">
+            <a href="settings.html" class="profile-trigger">
+                <i data-lucide="user"></i>
+            </a>
+        </header>
+
+        <header style="padding: 0 20px 10px;">
+            <h1 style="font-size: 28px; font-weight: 600;">Daily Logger</h1>
+            <p style="color: var(--text-muted);">How are you feeling today?</p>
+        </header>
+
+        <main style="padding: 10px 20px; padding-bottom: 100px;">
+            <!-- Mood Section -->
+            <section class="log-section">
+                <h3 style="font-size: 16px;">Mood</h3>
+                <div class="log-grid">
+                    <div class="glass log-card"><i data-lucide="smile" style="color: #FFD700;"></i><span>Happy</span>
+                    </div>
+                    <div class="glass log-card"><i data-lucide="meh" style="color: #6495ED;"></i><span>Calm</span></div>
+                    <div class="glass log-card"><i data-lucide="frown" style="color: #9370DB;"></i><span>Sad</span>
+                    </div>
+                    <div class="glass log-card"><i data-lucide="frown" style="color: #CD5C5C;"></i><span>Angry</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Symptoms Section -->
+            <section class="log-section">
+                <h3 style="font-size: 16px;">Symptoms</h3>
+                <div class="log-grid">
+                    <div class="glass log-card"><i data-lucide="zap"
+                            style="color: var(--primary);"></i><span>Cramps</span></div>
+                    <div class="glass log-card"><i data-lucide="thermometer"
+                            style="color: #FFA07A;"></i><span>Fever</span></div>
+                    <div class="glass log-card"><i data-lucide="battery"
+                            style="color: #8FBC8F;"></i><span>Fatigue</span></div>
+                    <div class="glass log-card"><i data-lucide="brain" style="color: #AFEEEE;"></i><span>Foggy</span></div>
+                    <div class="glass log-card"><i data-lucide="cloud-lightning" style="color: #9370DB;"></i><span>Headache</span></div>
+                    <div class="glass log-card"><i data-lucide="circle-dot" style="color: #DDA0DD;"></i><span>Bloating</span></div>
+                    <div class="glass log-card"><i data-lucide="arrow-down" style="color: #CD853F;"></i><span>Back Pain</span></div>
+                    <div class="glass log-card"><i data-lucide="heart-crack" style="color: #DB7093;"></i><span>Nausea</span></div>
+                </div>
+            </section>
+
+            <!-- Flow Intensity Section -->
+            <section class="log-section">
+                <h3 style="font-size: 16px;">Flow Intensity</h3>
+                <div class="log-grid" style="grid-template-columns: repeat(3, 1fr);">
+                    <div class="glass log-card flow-card" data-flow="light"><i data-lucide="droplet" style="color: #FFB6C1;"></i><span>Light</span></div>
+                    <div class="glass log-card flow-card" data-flow="medium"><i data-lucide="droplets" style="color: var(--primary);"></i><span>Medium</span></div>
+                    <div class="glass log-card flow-card" data-flow="heavy"><i data-lucide="waves" style="color: #C71585;"></i><span>Heavy</span></div>
+                </div>
+            </section>
+
+            <!-- Wellness scales (1–5) -->
+            <section class="log-section">
+                <h3 style="font-size: 16px;">Energy, stress & sleep</h3>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">Slide from 1 (low or rough) to 5 (strong or restful). Skip if you prefer — no pressure.</p>
+                <div style="margin-top: 16px;">
+                    <label for="energy-level" style="display:block; font-size: 13px; font-weight: 600; margin-bottom: 6px;">Energy today</label>
+                    <input type="range" id="energy-level" min="1" max="5" step="1" value="3" style="width:100%; accent-color: var(--primary);">
+                </div>
+                <div style="margin-top: 12px;">
+                    <label for="stress-level" style="display:block; font-size: 13px; font-weight: 600; margin-bottom: 6px;">Stress</label>
+                    <input type="range" id="stress-level" min="1" max="5" step="1" value="3" style="width:100%; accent-color: var(--primary);">
+                </div>
+                <div style="margin-top: 12px;">
+                    <label for="sleep-quality" style="display:block; font-size: 13px; font-weight: 600; margin-bottom: 6px;">Sleep quality (last night)</label>
+                    <input type="range" id="sleep-quality" min="1" max="5" step="1" value="3" style="width:100%; accent-color: var(--primary);">
+                </div>
+            </section>
+
+            <section class="log-section">
+                <h3 style="font-size: 16px;">Cravings (optional)</h3>
+                <textarea id="cravings-note" class="glass" rows="2" placeholder="Sweet, salty, comfort food, or habits you noticed…"></textarea>
+            </section>
+
+            <section class="log-section">
+                <h3 style="font-size: 16px;">Anxiety note (optional)</h3>
+                <textarea id="anxiety-note" class="glass" rows="2" placeholder="How it felt, what was on your mind — only if you want to capture it."></textarea>
+            </section>
+
+            <!-- Notes Section -->
+            <section class="log-section">
+                <h3 style="font-size: 16px;">Notes</h3>
+                <textarea id="journal-notes" class="glass" rows="4"
+                    placeholder="Enter any additional health notes..."></textarea>
+            </section>
+
+            <button id="save-journal-btn" class="glass"
+                style="width: 100%; padding: 15px; background: var(--primary); color: white; border: none; font-weight: 600; font-size: 16px; margin-top: 10px; cursor: pointer; border-radius: 12px;">Save
+                Journal</button>
+
+            <a href="journal.html" class="glass"
+                style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 12px; margin-top: 15px; text-decoration: none; color: var(--text-muted); font-size: 14px; font-weight: 600;">
+                <i data-lucide="history" style="width: 16px; height: 16px;"></i>
+                View Past Entries
+            </a>
+        </main>
+
+        <!-- Success Toast -->
+        <div id="success-toast" class="glass"
+            style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); padding: 15px 30px; background: #4CAF50; color: white; font-weight: 600; transition: var(--transition); z-index: 2000;">
+            Journal Saved Successfully!
+        </div>
+
+        <nav class="nav-container glass">
+            <a href="index.html" class="nav-item">
+                <i data-lucide="layout-dashboard"></i>
+                <span>Home</span>
+            </a>
+            <a href="calendar.html" class="nav-item">
+                <i data-lucide="calendar"></i>
+                <span>Calendar</span>
+            </a>
+            <a href="logs.html" class="nav-item active">
+                <i data-lucide="activity"></i>
+                <span>Log</span>
+            </a>
+            <a href="tips.html" class="nav-item">
+                <i data-lucide="sparkles"></i>
+                <span>Tips</span>
+            </a>
+            <a href="chat.html" class="nav-item">
+                <i data-lucide="message-circle"></i>
+                <span>Chat</span>
+            </a>
+            <a href="community.html" class="nav-item">
+                <i data-lucide="users"></i>
+                <span>Community</span>
+            </a>
+        </nav>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // Toggle logic for mood/symptom cards (multi-select for symptoms, single for mood)
+        document.querySelectorAll('.log-section:first-child .log-card').forEach(card => {
+            card.addEventListener('click', () => {
+                // Single select for mood
+                document.querySelectorAll('.log-section:first-child .log-card').forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+            });
+        });
+
+        document.querySelectorAll('.log-section:nth-child(2) .log-card').forEach(card => {
+            card.addEventListener('click', () => card.classList.toggle('selected'));
+        });
+
+        // Flow intensity — single select
+        document.querySelectorAll('.flow-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.querySelectorAll('.flow-card').forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+            });
+        });
+
+        // Save logic using backend API
+        document.getElementById('save-journal-btn').addEventListener('click', async () => {
+
+            const selectedMoods = Array.from(document.querySelectorAll('.log-section:first-child .log-card.selected span')).map(s => s.innerText);
+            const selectedSymptoms = Array.from(document.querySelectorAll('.log-section:nth-child(2) .log-card.selected span')).map(s => s.innerText);
+            const selectedFlow = document.querySelector('.flow-card.selected');
+            const notes = document.getElementById('journal-notes').value;
+            const energyLevel = parseInt(document.getElementById('energy-level').value, 10);
+            const stressLevel = parseInt(document.getElementById('stress-level').value, 10);
+            const sleepQuality = parseInt(document.getElementById('sleep-quality').value, 10);
+            const cravingsNote = document.getElementById('cravings-note').value;
+            const anxietyNote = document.getElementById('anxiety-note').value;
+
+            const entry = {
+                date: new Date().toISOString().split('T')[0],
+                mood: selectedMoods[0] || '',
+                symptoms: selectedSymptoms,
+                flow: selectedFlow ? selectedFlow.dataset.flow : '',
+                notes: notes,
+                energyLevel,
+                stressLevel,
+                sleepQuality,
+                cravingsNote,
+                anxietyNote
+            };
+
+            const btn = document.getElementById('save-journal-btn');
+            btn.innerText = 'Saving...';
+            btn.style.opacity = '0.7';
+
+            const res = await api.saveLog(entry);
+
+            btn.innerText = 'Save Journal';
+            btn.style.opacity = '1';
+
+            if (res.success) {
+                const toast = document.getElementById('success-toast');
+                toast.style.transform = 'translateX(-50%) translateY(20px)';
+
+                setTimeout(() => {
+                    toast.style.transform = 'translateX(-50%) translateY(-100px)';
+                    document.querySelectorAll('.log-card.selected').forEach(c => c.classList.remove('selected'));
+                    document.getElementById('journal-notes').value = '';
+                    document.getElementById('cravings-note').value = '';
+                    document.getElementById('anxiety-note').value = '';
+                    document.getElementById('energy-level').value = '3';
+                    document.getElementById('stress-level').value = '3';
+                    document.getElementById('sleep-quality').value = '3';
+                }, 2000);
+            } else {
+                alert('Failed to save: ' + (res.msg || 'Please try again.'));
+            }
+        });
+    </script>
+</body>
+
+</html>

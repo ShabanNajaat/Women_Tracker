@@ -1,0 +1,2 @@
+"/// Represents the different phases of the menstrual cycle.\nenum CyclePhase {\n  menstrual,\n  follicular,\n  ovulatory,\n  luteal;\n\n  /// Returns a human-readable name for the phase.\n  String get name {\n    switch (this) {\n      case CyclePhase.men
+<truncated 662 bytes>

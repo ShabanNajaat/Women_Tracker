@@ -1,0 +1,14 @@
+
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+    final isDark = Theme.of(canvas.getLocalClipBounds().isEmpty ? Offset.zero : Offset.zero).brightness == Brightness.dark; 
+    // Wait, Painter doesn't have context. I'll pass isDark to it.
+
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+"class _ShimmerPainter extends CustomPainter {\n  final double progress;\n  final bool isDark;\n  const _ShimmerPainter(this.progress, this.isDark);\n\n  @override\n  void paint(Canvas canvas, Size size) {\n    final gradient = LinearGradient(\n      begin
+<truncated 788 bytes>
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+"    final isDark = Theme.of(context).brightness == Brightness.dark;\n    return AnimatedBuilder(\n      animation: _ctrl,\n      builder: (_, __) => CustomPaint(\n        painter: _ShimmerPainter(_ctrl.value, isDark),\n        child: SizedBox(width: widge
+<truncated 53 bytes>

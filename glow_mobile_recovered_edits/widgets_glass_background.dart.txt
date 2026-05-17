@@ -1,0 +1,9 @@
+
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\9e8b77b6-cd7e-47af-85e4-d0072a837971\.system_generated\logs\overview.txt ---
+"import 'package:flutter/material.dart';\nimport 'package:flutter/foundation.dart' show kIsWeb;\nimport 'dart:ui' show ImageFilter;\n\nimport '../theme/glow_tokens.dart';\n\n/// Soft premium mesh — a clean, slick glassmorphism design.\nclass GlassBackgro
+<truncated 2958 bytes>
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+"            gradient: LinearGradient(\n              begin: Alignment.topLeft,\n              end: Alignment.bottomRight,\n              colors: isDark \n                ? [GlowTokens.darkBg, const Color(0xFF0D0A16), const Color(0xFF05050A)]\n            
+<truncated 94 bytes>

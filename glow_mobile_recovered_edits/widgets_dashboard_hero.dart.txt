@@ -1,0 +1,30 @@
+
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+"  @override\n  Widget build(BuildContext context) {\n    return Container(\n      margin: const EdgeInsets.symmetric(vertical: 16),\n      decoration: BoxDecoration(\n        borderRadius: BorderRadius.circular(28),\n        gradient: LinearGradient(\n   
+<truncated 2951 bytes>
+
+--- multi_replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+"  @override\n  Widget build(BuildContext context) {\n    return AnimatedGlassCard(\n      index: 0,\n      color: Colors.transparent,\n      padding: EdgeInsets.zero,\n      child: Container(\n        decoration: BoxDecoration(\n          borderRadius: Bo
+<truncated 5467 bytes>
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+"            colors: Theme.of(context).brightness == Brightness.dark\n                ? [\n                    GlowTokens.plum.withValues(alpha: 0.6),\n                    const Color(0xFF1A0B2E).withValues(alpha: 0.8),\n                    GlowTokens.dark
+<truncated 262 bytes>
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+"        child: Padding(\n          padding: const EdgeInsets.all(24),\n          child: Column(\n            crossAxisAlignment: CrossAxisAlignment.start,\n            children: [\n              // Header: Greeting + Points\n              Row(\n          
+<truncated 2257 bytes>
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+                : [
+                    GlowTokens.plum.withOpacity(0.7),
+                    GlowTokens.blue.withOpacity(0.5),
+                    GlowTokens.lavender.withOpacity(0.4),
+                  ],

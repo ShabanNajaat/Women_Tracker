@@ -1,0 +1,18 @@
+
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+"      return \"I'm processing that...\";\n    } else if (response.statusCode == 401) {\n      return 'Session expired. Please log in again to talk to Dr. Najaat.';\n    } else {\n      return _fallbackResponse(prompt);\n    }\n  } catch (e) {\n    print('
+<truncated 1656 bytes>
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+        final data = jsonDecode(response.body);
+        return data['response'] ?? data['text'] ?? "I'm processing that...";
+
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+"  /// Local fallback for common queries when the server is unreachable.\n  /// This \"Expert Local Wisdom\" mode provides rich, helpful advice even offline.\n  String _fallbackResponse(String prompt) {\n    final lower = prompt.toLowerCase();\n    \n    /
+<truncated 3395 bytes>
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+"    // Status Updates / Feelings\n    if (lower.contains('fine') || lower.contains('good') || lower.contains('okay') || lower.contains('ok') || lower.contains('great')) {\n      return \"I'm so glad to hear that! Maintaining that sense of balance is key. 
+<truncated 623 bytes>

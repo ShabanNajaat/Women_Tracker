@@ -1,0 +1,106 @@
+
+
+--- multi_replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\186feb35-cb5d-4b89-9d8d-7bb436788b9b\.system_generated\logs\overview.txt ---
+
+
+--- multi_replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\9e8b77b6-cd7e-47af-85e4-d0072a837971\.system_generated\logs\overview.txt ---
+
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\9e8b77b6-cd7e-47af-85e4-d0072a837971\.system_generated\logs\overview.txt ---
+              color: GlowTokens.sage.withValues(alpha: 0.15),
+
+--- multi_replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+            DashboardHero(
+              userName: _userName,
+              points: points,
+              latestBadge: earned.isNotEmpty ? earned.last : null,
+            ),
+
+--- multi_replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+
+
+--- multi_replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+                        subtitle: hasData
+                            ? 'Day ${_cycleData!['dayInCycle']} · ${phaseInfo?.name ?? ''}'
+                            : 'Open calendar',
+
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+                  phase: phaseEnum,
+                  advice: phaseInfo?.advice,
+                  isLoading: _isCycleLoading,
+                ),
+
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+"                  isLoading: _isCycleLoading,\n                ),\n                const SizedBox(height: 16),\n                Padding(\n                  padding: const EdgeInsets.symmetric(horizontal: 4),\n                  child: Row(\n               
+<truncated 1470 bytes>
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+                advice: phaseInfo?.advice,
+                nextPeriodDate: _cycleData?['nextPeriodDate'] as DateTime?,
+                isLoading: _isCycleLoading,
+
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+                  advice: phaseInfo?.advice,
+                  nextPeriodDate: _cycleData?['nextPeriodDate'] as DateTime?,
+                  isLoading: _isCycleLoading,
+
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+"                GestureDetector(\n                  onTap: () => setState(() => _currentIndex = 1),\n                  child: CycleWheel(\n                    dayInCycle: _cycleData?['dayInCycle'] as int?,\n                    cycleLength: _cycleData != n
+<truncated 360 bytes>
+
+--- multi_replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+
+
+--- multi_replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+                      boxShadow: [BoxShadow(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.15), blurRadius: 12, offset: const Offset(0, 6))],
+
+
+--- multi_replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+"  }\n\n  Widget _buildGlobalAlert(BuildContext context) {\n    return Container(\n      width: double.infinity,\n      padding: const EdgeInsets.all(16),\n      decoration: BoxDecoration(\n        gradient: LinearGradient(\n          colors: [GlowTokens.l
+<truncated 2667 bytes>
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+"  }\n\n  Widget _buildGlobalAlert(BuildContext context) {\n    return Container(\n      width: double.infinity,\n      padding: const EdgeInsets.all(16),\n      decoration: BoxDecoration(\n        gradient: LinearGradient(\n          colors: [GlowTokens.l
+<truncated 2667 bytes>
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+"  Widget _buildGlobalAlert(BuildContext context) {\n    return Container(\n      width: double.infinity,\n      padding: const EdgeInsets.all(16),\n      decoration: BoxDecoration(\n        gradient: LinearGradient(\n          colors: [GlowTokens.lavender
+<truncated 2660 bytes>
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+"  }\n\n  Widget _buildGlobalAlert(BuildContext context) {\n    return Container(\n      width: double.infinity,\n      padding: const EdgeInsets.all(16),\n      decoration: BoxDecoration(\n        gradient: LinearGradient(\n          colors: [GlowTokens.l
+<truncated 2667 bytes>
+
+--- multi_replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+  }
+}
+
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+  }
+}
+
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---
+
+
+--- multi_replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\dc2384e2-bf47-4101-a151-b1a2a8ba75ab\.system_generated\logs\overview.txt ---

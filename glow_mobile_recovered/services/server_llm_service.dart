@@ -1,0 +1,2 @@
+"import 'dart:convert';\nimport 'package:http/http.dart' as http;\nimport 'api_service.dart';\n\n/// Service to handle all LLM-related tasks: chat, journal reflections, and cycle insights.\n/// Communicates with the server-side LLM endpoint (typically /api
+<truncated 2953 bytes>

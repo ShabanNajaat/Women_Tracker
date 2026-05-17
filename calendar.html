@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar - Glow Wellness</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="web-theme.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="api.js"></script>
+    <style>
+        .calendar-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .control-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--primary);
+            padding: 5px;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .control-btn:hover {
+            background: var(--primary-light);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            border-radius: 12px;
+            cursor: pointer;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .day:hover {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        .day.other-month {
+            color: var(--text-muted);
+            opacity: 0.3;
+        }
+
+        .day.logged-period {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3);
+        }
+
+        .day.predicted-period {
+            background: hsla(330, 85%, 65%, 0.2);
+            border: 2px dashed var(--primary);
+            color: var(--primary-dark);
+        }
+
+        .day.ovulation {
+            border: 2px solid var(--secondary);
+            color: var(--secondary);
+        }
+
+        .day.today {
+            border: 2px solid var(--text-main);
+            font-weight: 600;
+        }
+
+        .day.ovulation {
+            background: hsla(260, 60%, 65%, 0.15);
+            border: 2px solid var(--secondary);
+            color: var(--secondary);
+        }
+
+        .weekday {
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            padding-bottom: 10px;
+        }
+
+        /* Modal styling */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            width: 90%;
+            max-width: 350px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(255, 20, 147, 0.3);
+            border: 2px solid var(--primary);
+        }
+
+        .modal-content h3 {
+            color: var(--text-main);
+            font-size: 20px;
+            margin-bottom: 25px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container animate-in">
+        <header class="top-header">
+            <a href="settings.html" class="profile-trigger">
+                <i data-lucide="user"></i>
+            </a>
+        </header>
+
+        <header style="padding: 0 20px 10px;">
+            <div class="calendar-controls">
+                <button class="control-btn" id="prev-month">
+                    <i data-lucide="chevron-left"></i>
+                </button>
+                <h1 id="month-display" style="font-size: 24px; font-weight: 600;">February 2026</h1>
+                <button class="control-btn" id="next-month">
+                    <i data-lucide="chevron-right"></i>
+                </button>
+            </div>
+            <p style="color: var(--text-muted);">Track and predict your cycle</p>
+        </header>
+
+        <main style="padding: 10px 20px;">
+            <div class="glass" style="padding: 20px;">
+                <div class="calendar-grid" id="calendar-body">
+                    <!-- Weekdays -->
+                    <div class="weekday">S</div>
+                    <div class="weekday">M</div>
+                    <div class="weekday">T</div>
+                    <div class="weekday">W</div>
+                    <div class="weekday">T</div>
+                    <div class="weekday">F</div>
+                    <div class="weekday">S</div>
+                    <!-- Days will be injected here -->
+                </div>
+
+                <div
+                    style="margin-top: 30px; display: flex; flex-wrap: wrap; gap: 15px; font-size: 12px; color: var(--text-muted);">
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <div style="width: 10px; height: 10px; background: var(--primary); border-radius: 2px;"></div>
+                        <span>Logged Period</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <div
+                            style="width: 10px; height: 10px; background: hsla(330, 85%, 65%, 0.2); border: 1px dashed var(--primary); border-radius: 2px;">
+                        </div>
+                        <span>Predicted</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <div style="width: 10px; height: 10px; background: hsla(260, 60%, 65%, 0.15); border: 1px solid var(--secondary); border-radius: 2px;"></div>
+                        <span>Ovulation</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass" style="margin-top: 20px; padding: 20px;">
+                <h3 style="font-size: 16px; margin-bottom: 10px;">Cycle Insights</h3>
+                <p id="prediction-text" style="font-size: 14px; color: var(--text-muted);">Log your period to see
+                    predictions.</p>
+            </div>
+        </main>
+
+        <nav class="nav-container glass">
+            <a href="index.html" class="nav-item">
+                <i data-lucide="layout-dashboard"></i>
+                <span>Home</span>
+            </a>
+            <a href="calendar.html" class="nav-item active">
+                <i data-lucide="calendar"></i>
+                <span>Calendar</span>
+            </a>
+            <a href="logs.html" class="nav-item">
+                <i data-lucide="activity"></i>
+                <span>Log</span>
+            </a>
+            <a href="tips.html" class="nav-item">
+                <i data-lucide="sparkles"></i>
+                <span>Tips</span>
+            </a>
+            <a href="chat.html" class="nav-item">
+                <i data-lucide="message-circle"></i>
+                <span>Chat</span>
+            </a>
+            <a href="community.html" class="nav-item">
+                <i data-lucide="users"></i>
+                <span>Community</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- Date Selection Modal -->
+    <div id="date-modal" class="modal">
+        <div class="glass modal-content">
+            <h3 id="modal-date-label" style="margin-bottom: 20px;">Date</h3>
+            <button id="toggle-period" class="glass"
+                style="width: 100%; padding: 15px; background: var(--primary); color: white; border: none; font-weight: 600; margin-bottom: 10px; cursor: pointer; border-radius: 12px;">
+                Log Period Start
+            </button>
+            <button id="close-modal" class="glass"
+                style="width: 100%; padding: 15px; color: var(--text-muted); border: 1px solid rgba(0,0,0,0.1); cursor: pointer; background: transparent;">
+                Close
+            </button>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        let currentDisplayDate = new Date();
+        let selectedDate = null;
+
+        let cachedData = {
+
+            cycleLength: 28,
+            periodLength: 5,
+            loggedPeriods: []
+        };
+
+        async function syncWithBackend() {
+            if (!session.isAuthenticated()) return;
+
+            const profile = await api.getProfile();
+            if (profile) {
+                cachedData.cycleLength = profile.cycleLength || 28;
+                cachedData.periodLength = profile.periodLength || 5;
+            }
+
+            const periods = await api.getPeriodDays();
+            cachedData.loggedPeriods = periods;
+        }
+
+        async function renderCalendar() {
+            const body = document.getElementById('calendar-body');
+            const display = document.getElementById('month-display');
+
+            const { cycleLength, periodLength, loggedPeriods } = cachedData;
+
+            // Clear previous days (keep weekdays)
+            const weekdays = body.querySelectorAll('.weekday');
+            body.innerHTML = '';
+            weekdays.forEach(w => body.appendChild(w));
+
+            const year = currentDisplayDate.getFullYear();
+            const month = currentDisplayDate.getMonth();
+
+            display.innerText = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(currentDisplayDate);
+
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const prevMonthDays = new Date(year, month, 0).getDate();
+
+            // Add previous month overflow
+            for (let i = firstDay - 1; i >= 0; i--) {
+                const dayDiv = document.createElement('div');
+                dayDiv.className = 'day other-month';
+                dayDiv.innerText = prevMonthDays - i;
+                body.appendChild(dayDiv);
+            }
+
+            // Current month days
+            const today = new Date();
+            for (let i = 1; i <= daysInMonth; i++) {
+                const dayDiv = document.createElement('div');
+                dayDiv.className = 'day';
+                dayDiv.innerText = i;
+
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+
+                // Highlight today
+                if (today.getFullYear() === year && today.getMonth() === month && today.getDate() === i) {
+                    dayDiv.classList.add('today');
+                }
+
+                // Highlight logged periods
+                if (loggedPeriods.includes(dateStr)) {
+                    dayDiv.classList.add('logged-period');
+                }
+
+                // Prediction Logic
+                if (loggedPeriods.length > 0) {
+                    const sortedPeriods = [...loggedPeriods].sort();
+                    const lastPeriodDate = new Date(sortedPeriods[sortedPeriods.length - 1]);
+
+                    const thisDate = new Date(year, month, i);
+
+                    // Predicted periods and ovulation
+                    for (let cycleOffset = 0; cycleOffset < 3; cycleOffset++) {
+                        let predStart = new Date(lastPeriodDate);
+                        predStart.setDate(predStart.getDate() + (cycleLength * (cycleOffset + 1)));
+
+                        let predEnd = new Date(predStart);
+                        predEnd.setDate(predEnd.getDate() + periodLength - 1);
+
+                        if (thisDate >= predStart && thisDate <= predEnd) {
+                            dayDiv.classList.add('predicted-period');
+                        }
+
+                        // Ovulation day: ~14 days before next period start
+                        let ovulationDate = new Date(predStart);
+                        ovulationDate.setDate(ovulationDate.getDate() - 14);
+                        if (thisDate.getTime() === ovulationDate.getTime() && !loggedPeriods.includes(dateStr)) {
+                            dayDiv.classList.add('ovulation');
+                        }
+                    }
+                }
+
+                dayDiv.onclick = () => openModal(dateStr, i);
+                body.appendChild(dayDiv);
+            }
+
+            updatePredictionText(loggedPeriods, cycleLength);
+        }
+
+        function updatePredictionText(periods, cycleLength) {
+            const textEl = document.getElementById('prediction-text');
+            if (periods.length === 0) {
+                textEl.innerText = "Log your period to see predictions.";
+                return;
+            }
+            const lastStart = new Date([...periods].sort().pop());
+            const nextStart = new Date(lastStart);
+            nextStart.setDate(nextStart.getDate() + cycleLength);
+
+            const options = { month: 'long', day: 'numeric' };
+            textEl.innerText = `Your next period is expected to start on ${nextStart.toLocaleDateString('en-US', options)}.`;
+        }
+
+        async function openModal(dateStr, dayNum) {
+            console.log('Opening modal for:', dateStr);
+            selectedDate = dateStr;
+            const modal = document.getElementById('date-modal');
+            const label = document.getElementById('modal-date-label');
+            const btn = document.getElementById('toggle-period');
+
+            const isLogged = cachedData.loggedPeriods.includes(dateStr);
+
+            // Fix for potential date offset issues
+            const dateParts = dateStr.split('-');
+            const displayDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
+            
+            label.innerText = displayDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+            btn.innerText = isLogged ? 'Remove Period Log' : 'Log Period Day';
+
+            modal.style.display = 'flex';
+        }
+
+        document.getElementById('toggle-period').onclick = async (e) => {
+            e.stopPropagation();
+            console.log('Toggling period for:', selectedDate);
+            const res = await api.togglePeriodDay(selectedDate);
+
+            if (res && (res.msg === 'Added' || res.msg === 'Removed')) {
+                await syncWithBackend();
+                document.getElementById('date-modal').style.display = 'none';
+                renderCalendar();
+            } else {
+                alert('Error toggling period: ' + (res.msg || 'Unknown error'));
+            }
+        };
+
+        document.getElementById('close-modal').onclick = (e) => {
+            e.stopPropagation();
+            console.log('Closing modal');
+            document.getElementById('date-modal').style.display = 'none';
+        };
+
+        document.getElementById('prev-month').onclick = () => {
+            currentDisplayDate.setMonth(currentDisplayDate.getMonth() - 1);
+            renderCalendar();
+        };
+
+        document.getElementById('next-month').onclick = () => {
+            currentDisplayDate.setMonth(currentDisplayDate.getMonth() + 1);
+            renderCalendar();
+        };
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            await syncWithBackend();
+            renderCalendar();
+        });
+    </script>
+</body>
+
+</html>

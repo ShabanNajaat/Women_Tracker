@@ -1,0 +1,2 @@
+"import 'package:flutter/material.dart';\nimport 'glass_card.dart';\n\n/// A [GlassCard] that fades in and slides up when first built.\n/// Pass [index] to stagger multiple cards (each adds 120 ms delay).\nclass AnimatedGlassCard extends StatefulWidget {\n
+<truncated 2354 bytes>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Hub - Glow Wellness</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="web-theme.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="api.js"></script>
+    <style>
+        .community-section {
+            margin-bottom: 30px;
+        }
+
+        .buddy-card {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 12px;
+        }
+
+        .buddy-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-light), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .circle-card {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .action-chip {
+            padding: 6px 12px;
+            border-radius: 20px;
+            background: var(--primary);
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .action-chip:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 10px rgba(255, 105, 180, 0.2);
+        }
+
+        .action-chip.outline {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container animate-in">
+        <header class="top-header">
+            <a href="settings.html" class="profile-trigger">
+                <i data-lucide="user"></i>
+            </a>
+        </header>
+
+        <header style="padding: 0 20px 10px;">
+            <h1 style="font-size: 28px; font-weight: 600;">Community Hub</h1>
+            <p style="color: var(--text-muted);">Find buddies & join circles</p>
+        </header>
+
+        <main style="padding: 10px 20px; padding-bottom: 120px;">
+            <!-- Support Circles -->
+            <div class="community-section">
+                <h3 style="font-size: 16px; margin-bottom: 15px; color: var(--text-main);">Support Circles</h3>
+                <div class="glass circle-card">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div>
+                            <h4 style="font-size: 15px; margin-bottom: 4px;">PCOS Wellness</h4>
+                            <p style="font-size: 12px; color: var(--text-muted);">1.2k members active</p>
+                        </div>
+                        <button class="action-chip">Join Circle</button>
+                    </div>
+                    <p style="font-size: 13px; color: var(--text-main);">Sharing tips on diet, exercise, and hormone
+                        balancing.</p>
+                </div>
+
+                <div class="glass circle-card" style="border-left-color: var(--secondary);">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div>
+                            <h4 style="font-size: 15px; margin-bottom: 4px;">Morning Yoga Bit</h4>
+                            <p style="font-size: 12px; color: var(--text-muted);">850 members active</p>
+                        </div>
+                        <button class="action-chip">Join Circle</button>
+                    </div>
+                    <p style="font-size: 13px; color: var(--text-main);">Daily morning flows to start your day with
+                        mindfulness.</p>
+                </div>
+            </div>
+
+            <!-- Global Members -->
+            <div class="community-section">
+                <h3 style="font-size: 16px; margin-bottom: 15px; color: var(--text-main);">Community Members</h3>
+                <div class="glass buddy-card">
+                    <div class="buddy-avatar" style="background: linear-gradient(135deg, #FF69B4, #BA55D3);">MK</div>
+                    <div style="flex: 1;">
+                        <h4 style="font-size: 14px;">Mary Kusi</h4>
+                        <p style="font-size: 11px; color: var(--text-muted);">Active 5m ago • Mood: Happy</p>
+                    </div>
+                    <button class="action-chip outline" onclick="connect(this)">Connect</button>
+                </div>
+
+                <div class="glass buddy-card">
+                    <div class="buddy-avatar" style="background: linear-gradient(135deg, #FF7F50, #DB7093);">EA</div>
+                    <div style="flex: 1;">
+                        <h4 style="font-size: 14px;">Emmanuella Appiah</h4>
+                        <p style="font-size: 11px; color: var(--text-muted);">Active 2h ago • Luteal Phase</p>
+                    </div>
+                    <button class="action-chip outline" onclick="connect(this)">Connect</button>
+                </div>
+
+                <div class="glass buddy-card">
+                    <div class="buddy-avatar" style="background: linear-gradient(135deg, #32CD32, #20B2AA);">JN</div>
+                    <div style="flex: 1;">
+                        <h4 style="font-size: 14px;">Janet Nyarko</h4>
+                        <p style="font-size: 11px; color: var(--text-muted);">Recently Joined • Motivation Enthusiast
+                        </p>
+                    </div>
+                    <button class="action-chip outline" onclick="connect(this)">Connect</button>
+                </div>
+            </div>
+        </main>
+
+        <nav class="nav-container glass">
+            <a href="index.html" class="nav-item">
+                <i data-lucide="layout-dashboard"></i>
+                <span>Home</span>
+            </a>
+            <a href="calendar.html" class="nav-item">
+                <i data-lucide="calendar"></i>
+                <span>Calendar</span>
+            </a>
+            <a href="logs.html" class="nav-item">
+                <i data-lucide="activity"></i>
+                <span>Log</span>
+            </a>
+            <a href="tips.html" class="nav-item">
+                <i data-lucide="sparkles"></i>
+                <span>Tips</span>
+            </a>
+            <a href="chat.html" class="nav-item">
+                <i data-lucide="message-circle"></i>
+                <span>Chat</span>
+            </a>
+            <a href="community.html" class="nav-item active">
+                <i data-lucide="users"></i>
+                <span>Community</span>
+            </a>
+        </nav>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        function connect(btn) {
+            if (btn.innerText === 'Connect') {
+                btn.innerText = 'Requested';
+                btn.style.background = 'var(--secondary)';
+                btn.style.borderColor = 'var(--secondary)';
+                btn.style.color = 'white';
+            } else {
+                btn.innerText = 'Connect';
+                btn.style.background = 'transparent';
+                btn.style.borderColor = 'var(--primary)';
+                btn.style.color = 'var(--primary)';
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "103650710155",
+    "project_id": "glow-wellness-68460",
+    "storage_bucket": "glow-wellness-68460.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:103650710155:android:9bf68ff13fed8cfb28ba8e",
+        "android_client_info": {
+          "package_name": "com.example.glow_mobile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "103650710155-m2l0k80st93kbg5sm0a91b2t01245p4e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7uIA3Z-s4hVvIXx4zidStahlyY8LBjjc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "103650710155-m2l0k80st93kbg5sm0a91b2t01245p4e.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

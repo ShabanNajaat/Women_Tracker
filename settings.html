@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Settings - Glow Wellness</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="web-theme.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <script src="api.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .setting-group {
+            margin-bottom: 25px;
+        }
+
+        .setting-item {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .toggle-btn {
+            width: 44px;
+            height: 24px;
+            background: #ddd;
+            border-radius: 12px;
+            position: relative;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .toggle-btn.on {
+            background: var(--primary);
+        }
+
+        .toggle-btn::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: var(--transition);
+        }
+
+        .toggle-btn.on::after {
+            left: 22px;
+        }
+
+        input.glass {
+            border: none;
+            padding: 8px 12px;
+            width: 60px;
+            text-align: right;
+            font-family: inherit;
+            outline: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container animate-in">
+        <header class="top-header">
+            <a href="index.html" class="profile-trigger">
+                <i data-lucide="home"></i>
+            </a>
+        </header>
+
+        <header style="padding: 0 20px 10px; text-align: center;">
+            <div
+                style="width: 100px; height: 100px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; border: 4px solid white; box-shadow: var(--shadow);">
+                <i data-lucide="user" style="color: white; font-size: 40px; width: 40px; height: 40px;"></i>
+            </div>
+            <h1 id="user-name" contenteditable="true"
+                style="font-size: 24px; font-weight: 600; outline: none; border-bottom: 2px dashed var(--primary-light);">
+                Sarah Johnson</h1>
+            <p style="color: var(--text-muted); font-size: 14px;">Member since Jan 2026</p>
+        </header>
+
+        <main style="padding: 10px 20px; padding-bottom: 100px;">
+            <div class="setting-group">
+                <h3
+                    style="font-size: 14px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; margin-left: 5px;">
+                    Cycle Settings</h3>
+                <div class="glass setting-item">
+                    <span>Average Cycle Length</span>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <input type="number" id="cycle-length" class="glass" value="28">
+                        <span style="font-size: 14px;">Days</span>
+                    </div>
+                </div>
+                <div class="glass setting-item">
+                    <span>Average Period Length</span>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <input type="number" id="period-length" class="glass" value="5">
+                        <span style="font-size: 14px;">Days</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="setting-group" id="notifications-group">
+                <h3
+                    style="font-size: 14px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; margin-left: 5px;">
+                    Notifications</h3>
+                <div class="glass setting-item">
+                    <span>Period Reminders</span>
+                    <div class="toggle-btn" data-key="period_reminders"></div>
+                </div>
+                <div class="glass setting-item">
+                    <span>Fertility Alerts</span>
+                    <div class="toggle-btn" data-key="fertility_alerts"></div>
+                </div>
+                <div class="glass setting-item">
+                    <span>Daily Health Tips</span>
+                    <div class="toggle-btn" data-key="health_tips"></div>
+                </div>
+            </div>
+
+            <div class="setting-group">
+                <h3
+                    style="font-size: 14px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; margin-left: 5px;">
+                    Appearance</h3>
+                <div class="glass setting-item">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i data-lucide="moon" style="width: 18px; height: 18px; color: var(--secondary);"></i>
+                        <span>Dark Mode</span>
+                    </div>
+                    <div class="toggle-btn" id="dark-mode-toggle"></div>
+                </div>
+            </div>
+
+            <button id="save-settings-btn" class="glass"
+                style="width: 100%; padding: 15px; background: var(--primary); color: white; border: none; font-weight: 600; font-size: 16px; margin-bottom: 15px; cursor: pointer; border-radius: 12px;">Save
+                Changes</button>
+
+            <button id="logout-btn" class="glass"
+                style="width: 100%; padding: 15px; color: var(--text-muted); border: 1px solid rgba(0,0,0,0.1); font-weight: 600; cursor: pointer; background: transparent;">Log
+                Out</button>
+
+            <!-- Success Toast -->
+            <div id="success-toast" class="glass"
+                style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); padding: 15px 30px; background: #4CAF50; color: white; font-weight: 600; transition: var(--transition); z-index: 2000;">
+                Settings Saved!
+            </div>
+        </main>
+
+        <nav class="nav-container glass">
+            <a href="index.html" class="nav-item">
+                <i data-lucide="layout-dashboard"></i>
+                <span>Home</span>
+            </a>
+            <a href="calendar.html" class="nav-item">
+                <i data-lucide="calendar"></i>
+                <span>Calendar</span>
+            </a>
+            <a href="logs.html" class="nav-item">
+                <i data-lucide="activity"></i>
+                <span>Log</span>
+            </a>
+            <a href="tips.html" class="nav-item">
+                <i data-lucide="sparkles"></i>
+                <span>Tips</span>
+            </a>
+            <a href="chat.html" class="nav-item">
+                <i data-lucide="message-circle"></i>
+                <span>Chat</span>
+            </a>
+            <a href="community.html" class="nav-item">
+                <i data-lucide="users"></i>
+                <span>Community</span>
+            </a>
+        </nav>
+    </div>
+
+
+    <script>
+        lucide.createIcons();
+
+        // Load settings
+        window.addEventListener('DOMContentLoaded', async () => {
+            if (!session.isAuthenticated()) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const profile = await api.getProfile();
+
+            if (profile.name) document.getElementById('user-name').innerText = profile.name;
+            if (profile.cycleLength) document.getElementById('cycle-length').value = profile.cycleLength;
+            if (profile.periodLength) document.getElementById('period-length').value = profile.periodLength;
+
+            // Restore notification toggles
+            if (profile.notifications) {
+                document.querySelectorAll('.toggle-btn').forEach(btn => {
+                    const key = btn.dataset.key;
+                    if (profile.notifications[key]) btn.classList.add('on');
+                });
+            }
+        });
+
+        // Dark mode toggle: true = dark, false = light, unset = system
+        const darkPref = localStorage.getItem('glow_dark_mode');
+        const darkToggle = document.getElementById('dark-mode-toggle');
+        if (darkPref === 'true') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            darkToggle.classList.add('on');
+        } else if (darkPref === 'false') {
+            document.documentElement.setAttribute('data-theme', 'light');
+        }
+
+        darkToggle.addEventListener('click', () => {
+            darkToggle.classList.toggle('on');
+            const isDark = darkToggle.classList.contains('on');
+            localStorage.setItem('glow_dark_mode', isDark ? 'true' : 'false');
+            if (isDark) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+        });
+
+        // Toggle logic for notification toggles (not the dark mode one)
+        document.querySelectorAll('.toggle-btn[data-key]').forEach(btn => {
+            btn.addEventListener('click', () => btn.classList.toggle('on'));
+        });
+
+        // Save logic
+        document.getElementById('save-settings-btn').addEventListener('click', async () => {
+            const btn = document.getElementById('save-settings-btn');
+            btn.innerText = 'Saving...';
+            btn.style.opacity = '0.7';
+
+            const notifications = {};
+            document.querySelectorAll('.toggle-btn[data-key]').forEach(b => {
+                notifications[b.dataset.key] = b.classList.contains('on');
+            });
+
+            const data = {
+                name: document.getElementById('user-name').innerText.trim(),
+                cycleLength: parseInt(document.getElementById('cycle-length').value),
+                periodLength: parseInt(document.getElementById('period-length').value),
+                notifications: notifications
+            };
+
+            const res = await api.saveProfile(data);
+
+            btn.innerText = 'Save Changes';
+            btn.style.opacity = '1';
+
+            if (res.success) {
+                const toast = document.getElementById('success-toast');
+                toast.style.transform = 'translateX(-50%) translateY(20px)';
+                setTimeout(() => {
+                    toast.style.transform = 'translateX(-50%) translateY(-100px)';
+                }, 2000);
+            } else {
+                alert('Failed to save settings: ' + (res.msg || 'Please try again.'));
+            }
+        });
+
+        // Logout logic
+        document.getElementById('logout-btn').addEventListener('click', async (e) => {
+            e.preventDefault();
+            if (confirm('Are you sure you want to log out?')) {
+                console.log('Logging out...');
+                await session.logout();
+            }
+        });
+    </script>
+</body>
+
+</html>

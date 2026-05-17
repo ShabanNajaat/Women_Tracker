@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Glow web (Chrome — uses port 7357 from settings)",
+      "request": "launch",
+      "type": "dart",
+      "cwd": "glow_mobile",
+      "program": "lib/main.dart",
+      "deviceId": "chrome"
+    }
+  ]
+}

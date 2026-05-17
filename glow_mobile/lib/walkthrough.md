@@ -1,0 +1,2 @@
+"# Glow Wellness UI Overhaul Walkthrough\n\nThe Glow Wellness application has been upgraded with a premium \"Glow 2.0\" glassmorphism aesthetic, featuring new screens, animated components, and real-time backend integration.\n\n## Key Features\n\n### 1. Das
+<truncated 2368 bytes>

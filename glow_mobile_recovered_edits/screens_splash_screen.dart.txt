@@ -1,0 +1,5 @@
+
+
+--- replace_file_content from C:\Users\ADMIN\.gemini\antigravity\brain\186feb35-cb5d-4b89-9d8d-7bb436788b9b\.system_generated\logs\overview.txt ---
+      CurvedAnimation(parent: _controller, curve: const Interval(0.0, 0.6, curve: Curves.easeOutBack)),
+    );

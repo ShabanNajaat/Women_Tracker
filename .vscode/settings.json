@@ -1,0 +1,7 @@
+{
+  "dart.flutterRunAdditionalArgs": [
+    "--web-hostname=localhost",
+    "--web-port=7357",
+    "--dart-define=API_BASE_URL=http://localhost:8081/api"
+  ]
+}

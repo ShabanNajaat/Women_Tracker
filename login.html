@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome - Glow Wellness</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="web-theme.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="api.js"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        .password-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .password-wrapper .input-std {
+            padding-right: 48px;
+            margin-bottom: 0;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-muted);
+            padding: 6px;
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+        }
+
+        .toggle-password:hover {
+            color: var(--primary);
+            background: var(--primary-muted);
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .shake {
+            animation: shake 0.28s ease;
+            border-color: #DC2626 !important;
+        }
+
+        .forgot-row {
+            text-align: right;
+            margin-top: -8px;
+            margin-bottom: 18px;
+        }
+
+        .google-slot {
+            width: 100%;
+            min-height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+        }
+
+        #auth-toast.glass {
+            transform: translateX(-50%);
+            border-radius: var(--radius-md);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="auth-page">
+        <div class="glass login-card animate-in">
+            <div class="logo-mark">
+                <i data-lucide="sparkles" style="width: 26px; height: 26px;"></i>
+            </div>
+            <h1 class="auth-title">Glow</h1>
+            <p class="auth-tagline">Cycle and wellness tracking, designed with clarity in mind.</p>
+
+            <div id="auth-forms">
+                <div id="login-form">
+                    <div class="auth-field-stack">
+                        <label class="auth-label" for="login-email">Email</label>
+                        <input type="email" id="login-email" class="input-std glass" placeholder="you@example.com" autocomplete="email" aria-required="true" aria-invalid="false" aria-describedby="login-email-hint">
+                        <span id="login-email-hint" class="auth-helper" style="display: block; margin-top: 6px;">We’ll normalize email to lowercase.</span>
+                    </div>
+                    <div class="auth-field-stack">
+                        <label class="auth-label" for="login-password">Password</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="login-password" class="input-std glass" placeholder="Enter your password" autocomplete="current-password" aria-required="true" aria-invalid="false">
+                            <button type="button" class="toggle-password" onclick="togglePass('login-password', this)" aria-label="Show password">
+                                <i data-lucide="eye-off" style="width: 18px; height: 18px;"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="forgot-row">
+                        <a href="#" id="forgot-password" class="btn-link" style="font-size: 13px;">Forgot password?</a>
+                    </div>
+
+                    <button type="button" id="login-submit" class="btn-primary" style="margin-top: 8px; margin-bottom: 16px;">Sign in</button>
+                    <p style="font-size: 14px; color: var(--text-muted);">
+                        No account?
+                        <a href="#" id="show-register" class="btn-link">Create one</a>
+                    </p>
+                </div>
+
+                <div id="register-form" style="display: none;">
+                    <div class="auth-field-stack">
+                        <label class="auth-label" for="reg-name">Full name</label>
+                        <input type="text" id="reg-name" class="input-std glass" placeholder="Your name" autocomplete="name" aria-required="true" aria-invalid="false">
+                    </div>
+                    <div class="auth-field-stack">
+                        <label class="auth-label" for="reg-email">Email</label>
+                        <input type="email" id="reg-email" class="input-std glass" placeholder="you@example.com" autocomplete="email" aria-required="true" aria-invalid="false">
+                    </div>
+                    <div class="auth-field-stack">
+                        <label class="auth-label" for="reg-password">Password</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="reg-password" class="input-std glass" placeholder="At least 6 characters" autocomplete="new-password" aria-required="true" aria-invalid="false" minlength="6">
+                            <button type="button" class="toggle-password" onclick="togglePass('reg-password', this)" aria-label="Show password">
+                                <i data-lucide="eye-off" style="width: 18px; height: 18px;"></i>
+                            </button>
+                        </div>
+                        <span class="auth-helper" style="display: block; margin-top: 8px;">Use at least 6 characters.</span>
+                    </div>
+
+                    <button type="button" id="register-submit" class="btn-secondary" style="margin-top: 4px; margin-bottom: 16px;">Create account</button>
+                    <p style="font-size: 14px; color: var(--text-muted);">
+                        Already registered?
+                        <a href="#" id="show-login" class="btn-link" style="color: var(--secondary);">Sign in</a>
+                    </p>
+                </div>
+            </div>
+
+            <div class="divider-with-label"><span>or</span></div>
+
+            <div id="google-login-btn" class="google-slot glass btn-ghost" style="padding: 0; overflow: hidden;">
+            </div>
+            <p id="google-auth-hint" class="auth-helper" style="display: none; margin-top: 10px; text-align: center;">Google sign-in needs <code style="font-size: 12px;">GOOGLE_CLIENT_ID</code> in server <code style="font-size: 12px;">.env</code>. See <code style="font-size: 12px;">server/.env.example</code>.</p>
+
+            <div id="auth-toast" class="glass"
+                role="status"
+                aria-live="polite"
+                style="display: none; position: fixed; bottom: 24px; left: 50%; padding: 12px 22px; font-size: 14px; font-weight: 600; color: white; background: #DC2626; z-index: 1000; border: none;">
+                Error message here
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        function authErr(res, fallback) {
+            const m = res && (res.message || res.msg);
+            return (m && String(m).trim()) || fallback;
+        }
+
+        const toast = (msg, isError = true) => {
+            const el = document.getElementById('auth-toast');
+            el.textContent = msg;
+            el.style.background = isError ? '#DC2626' : '#0D9488';
+            el.setAttribute('role', isError ? 'alert' : 'status');
+            el.setAttribute('aria-live', isError ? 'assertive' : 'polite');
+            el.style.display = 'block';
+            setTimeout(() => { el.style.display = 'none'; }, 3200);
+        };
+
+        function togglePass(inputId, btn) {
+            const input = document.getElementById(inputId);
+            const icon = btn.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.setAttribute('data-lucide', 'eye');
+            } else {
+                input.type = 'password';
+                icon.setAttribute('data-lucide', 'eye-off');
+            }
+            lucide.createIcons();
+        }
+
+        function clearInputError(id) {
+            const el = document.getElementById(id);
+            el.classList.remove('field-error', 'shake');
+            el.setAttribute('aria-invalid', 'false');
+        }
+
+        function validateField(id) {
+            const el = document.getElementById(id);
+            if (!el.value.trim()) {
+                el.classList.add('shake', 'field-error');
+                el.setAttribute('aria-invalid', 'true');
+                setTimeout(() => el.classList.remove('shake'), 400);
+                return false;
+            }
+            clearInputError(id);
+            return true;
+        }
+
+        ['login-email', 'login-password', 'reg-name', 'reg-email', 'reg-password'].forEach((id) => {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener('input', () => clearInputError(id));
+        });
+
+        document.getElementById('show-register').onclick = (e) => {
+            e.preventDefault();
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('register-form').style.display = 'block';
+            lucide.createIcons();
+        };
+
+        document.getElementById('show-login').onclick = (e) => {
+            e.preventDefault();
+            document.getElementById('register-form').style.display = 'none';
+            document.getElementById('login-form').style.display = 'block';
+            lucide.createIcons();
+        };
+
+        document.getElementById('login-submit').onclick = async () => {
+            if (!validateField('login-email') || !validateField('login-password')) {
+                return toast('Please fill all fields');
+            }
+
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            const btn = document.getElementById('login-submit');
+            btn.innerText = 'Signing in…';
+            btn.disabled = true;
+            btn.style.opacity = '0.85';
+
+            const res = await api.login(email, password);
+
+            btn.innerText = 'Sign in';
+            btn.disabled = false;
+            btn.style.opacity = '1';
+
+            if (res.token) {
+                toast('Welcome back.', false);
+                setTimeout(() => { window.location.href = 'index.html'; }, 800);
+            } else {
+                toast(authErr(res, 'Login failed'));
+            }
+        };
+
+        document.getElementById('forgot-password').onclick = async (e) => {
+            e.preventDefault();
+            const emailEl = document.getElementById('login-email');
+            const email = emailEl.value;
+            if (!email.trim()) {
+                emailEl.classList.add('shake', 'field-error');
+                emailEl.setAttribute('aria-invalid', 'true');
+                setTimeout(() => emailEl.classList.remove('shake'), 400);
+                return toast('Enter your email first');
+            }
+
+            const btn = document.getElementById('forgot-password');
+            const originalText = btn.innerText;
+            btn.innerText = 'Sending…';
+            btn.style.opacity = '0.5';
+            btn.style.pointerEvents = 'none';
+
+            const res = await api.resetPassword(email);
+
+            btn.innerText = originalText;
+            btn.style.opacity = '1';
+            btn.style.pointerEvents = 'auto';
+
+            if (res.success) {
+                toast('Check your email for reset instructions.', false);
+            } else {
+                toast(authErr(res, 'Could not send link'));
+            }
+        };
+
+        document.getElementById('register-submit').onclick = async () => {
+            if (!validateField('reg-name') || !validateField('reg-email') || !validateField('reg-password')) {
+                return toast('Please fill all fields');
+            }
+
+            const name = document.getElementById('reg-name').value;
+            const email = document.getElementById('reg-email').value;
+            const password = document.getElementById('reg-password').value;
+
+            if (password.length < 6) {
+                const pw = document.getElementById('reg-password');
+                pw.classList.add('field-error');
+                pw.setAttribute('aria-invalid', 'true');
+                return toast('Password must be at least 6 characters');
+            }
+
+            const btn = document.getElementById('register-submit');
+            btn.innerText = 'Creating account…';
+            btn.disabled = true;
+            btn.style.opacity = '0.85';
+
+            const res = await api.register(name, email, password);
+
+            btn.innerText = 'Create account';
+            btn.disabled = false;
+            btn.style.opacity = '1';
+
+            if (res.token) {
+                toast('Account created.', false);
+                setTimeout(() => { window.location.href = 'index.html'; }, 800);
+            } else {
+                toast(authErr(res, 'Registration failed'));
+            }
+        };
+
+        window.handleGoogleLogin = async (response) => {
+            if (!response || !response.credential) {
+                return toast('Google did not return a credential');
+            }
+            toast('Signing in with Google…', false);
+            try {
+                const res = await api.googleLogin(response.credential);
+                if (res.token) {
+                    toast('Welcome back.', false);
+                    setTimeout(() => { window.location.href = 'index.html'; }, 800);
+                } else {
+                    toast(authErr(res, 'Google sign-in failed'));
+                }
+            } catch (err) {
+                console.error(err);
+                toast('Could not reach server');
+            }
+        };
+
+        window.addEventListener('load', async () => {
+            lucide.createIcons();
+
+            const slot = document.getElementById('google-login-btn');
+            const hintEl = document.getElementById('google-auth-hint');
+            const cfg = await api.get('/auth/public-config');
+            const clientId = cfg.googleClientId || (Array.isArray(cfg.googleClientIds) && cfg.googleClientIds[0]);
+
+            if (typeof google === 'undefined' || !google.accounts || !google.accounts.id) {
+                slot.innerHTML = '<p class="auth-google-hint">Google script failed to load. Check your network or ad blocker.</p>';
+                return;
+            }
+
+            if (!clientId) {
+                slot.innerHTML = '<p class="auth-google-hint">Google sign-in is disabled until the server sets GOOGLE_CLIENT_ID.</p>';
+                hintEl.style.display = 'block';
+                return;
+            }
+
+            hintEl.style.display = 'none';
+            google.accounts.id.initialize({
+                client_id: clientId,
+                callback: window.handleGoogleLogin,
+                ux_mode: 'popup',
+            });
+
+            google.accounts.id.renderButton(
+                slot,
+                { theme: 'outline', size: 'large', width: 360, text: 'continue_with', shape: 'rectangular' },
+            );
+
+            google.accounts.id.prompt();
+        });
+
+        if (session.isAuthenticated()) {
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+
+</html>

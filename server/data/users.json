@@ -1,0 +1,35 @@
+[
+  {
+    "name": "Shaban Najaat",
+    "email": "najaatmohammedshaban@gmail.com",
+    "password": "$2b$10$8ZBAHJuiyMy4BLacpCxKBuwNHAv.qt/aWmVimCp4ANc54aDIYttum",
+    "profile": {
+      "cycleLength": 28,
+      "periodLength": 5
+    },
+    "id": "1771174277905",
+    "googleId": "101604726994243336611",
+    "picture": "https://lh3.googleusercontent.com/a/ACg8ocJqiA2Dnovm3PwBbqrBT-v4JnRW9ZH3zdmOqqq5Bnvjc4K1WS4=s96-c"
+  },
+  {
+    "name": "Google User",
+    "email": "googleuser@example.com",
+    "googleId": "google_1771174841192",
+    "profile": {
+      "cycleLength": 28,
+      "periodLength": 5
+    },
+    "id": "1771174842219"
+  },
+  {
+    "name": "Hidaayah Shaban Mohammed",
+    "email": "shabanmohammedhidaayah4@gmail.com",
+    "googleId": "104082558360402927674",
+    "picture": "https://lh3.googleusercontent.com/a/ACg8ocIBytswztgoDDuagQFHwRF1U9p59JvsvoMbqwC-m3b6K7309g=s96-c",
+    "profile": {
+      "cycleLength": 28,
+      "periodLength": 5
+    },
+    "id": "1771178468557"
+  }
+]
