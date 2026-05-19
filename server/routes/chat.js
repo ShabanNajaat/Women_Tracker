@@ -113,15 +113,25 @@ const systemPrompt = `You are Dr. Najaat, a caring women's health and wellness c
 - For anything that could be urgent (severe or sudden pain, very heavy bleeding, fever with pain, pregnancy concerns, thoughts of self-harm, panic that won't ease, feeling unsafe): encourage reaching **emergency services or a crisis line** (e.g. 988 in the U.S. when relevant) and contacting a clinician promptly. Stay supportive and clear that you cannot diagnose or treat.
 
 **Format**
-- Aim for at most about 4 short sentences unless the user clearly asks for more detail.
-- On simple greetings, respond with a soft welcome and an open invitation to share what's on their mind — not a one-word reply.
+- Match the user's depth: short friendly answers for quick questions; up to 2–3 short paragraphs when they want real guidance.
+- Use their conversation history and any "About this user" context (cycle phase, day in cycle) to personalize — reference it naturally when relevant.
+- On simple greetings, respond with a warm welcome and invite them to share what's on their mind — not a one-word reply.
+- Give specific, practical ideas (foods, rest, movement, tracking tips) instead of vague platitudes.
+- If their question is vague, ask one gentle clarifying question, then offer 2–3 concrete suggestions.
+- Do not repeat the same opening every message; vary wording and reference what they just said.
 
 **Ideas you can draw on (not prescriptions)**
 - Cramps: heat, rest, gentle movement, hydration; when to consider medical care if symptoms are unusual for them.
 - Sleep or fatigue: wind-down routines, consistency, honoring rest; not guilt for hard nights.
 - Stress or anxiety: grounding, breath, tiny breaks; professional support when it feels bigger than self-care.
 
-Close serious or uncertain topics with a reminder to check in with a qualified clinician when something doesn't feel right for them.`;
+Close serious or uncertain topics with a reminder to check in with a qualified clinician when something doesn't feel right for them.
+
+**Reply structure (important)**
+- Line 1: brief empathy that mirrors what they said.
+- Then 2–4 bullet points with specific, doable ideas (food, rest, heat, tracking, breathwork).
+- End with one short follow-up question OR a calm clinician reminder if symptoms sound severe.
+- Never reply with only a greeting if they asked a real question. Never reply with a single vague sentence.`;
 
 const auth = (req, res, next) => {
     const token = req.header('x-auth-token');
@@ -136,27 +146,98 @@ const auth = (req, res, next) => {
     }
 };
 
-async function generateDoctorReply(userText) {
+function buildUserContextBlock(body) {
+    const ctx = body?.context;
+    if (!ctx || typeof ctx !== 'object') return '';
+    const parts = [];
+    if (ctx.phase) parts.push(`Cycle phase: ${ctx.phase}`);
+    if (ctx.cycleDay != null) parts.push(`Day in cycle (approx.): ${ctx.cycleDay}`);
+    if (ctx.cycleLength != null) parts.push(`Typical cycle length: ${ctx.cycleLength} days`);
+    if (ctx.recentMood) parts.push(`Recent mood: ${ctx.recentMood}`);
+    if (ctx.recentEnergy) parts.push(`Recent energy: ${ctx.recentEnergy}`);
+    if (ctx.recentSleep) parts.push(`Recent sleep: ${ctx.recentSleep}`);
+    if (parts.length === 0) return '';
+    return parts.join('. ') + '.';
+}
+
+/** Avoid matching "hi" inside "this", "thinking", etc. */
+function matchesKeyword(text, keyword) {
+    const k = String(keyword).toLowerCase().trim();
+    if (!k) return false;
+    if (k.length <= 4) {
+        const escaped = k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        return new RegExp(`\\b${escaped}\\b`, 'i').test(text);
+    }
+    return text.includes(k);
+}
+
+async function buildChatMessagesForProvider(userId, userText, extraContext) {
+    const history = await db.findChatMessages(userId);
+    const trimmed = (userText || '').trim();
+    // Drop the message we just saved — we'll add it once at the end.
+    let recent = history.slice(-24);
+    if (trimmed && recent.length > 0) {
+        const last = serializeChatMessage(recent[recent.length - 1]);
+        if (last.role === 'user' && (last.text || '').trim() === trimmed) {
+            recent = recent.slice(0, -1);
+        }
+    }
+    recent = recent.slice(-16);
+
+    const systemContent = extraContext
+        ? `${systemPrompt}\n\n**About this user right now**\n${extraContext}`
+        : systemPrompt;
+
+    const messages = [{ role: 'system', content: systemContent }];
+
+    for (const raw of recent) {
+        const row = serializeChatMessage(raw);
+        const text = (row.text || '').trim();
+        if (!text || text.length < 2) continue;
+        const role = row.role === 'ai' ? 'assistant' : 'user';
+        messages.push({ role, content: text });
+    }
+
+    if (trimmed) {
+        messages.push({ role: 'user', content: trimmed });
+    }
+
+    return messages;
+}
+
+async function generateDoctorReply(userId, userText, extraContext = '') {
     const content = userText || 'The user shared their feelings.';
+    const messages = await buildChatMessagesForProvider(userId, content, extraContext);
 
     if (openai) {
         const completion = await openai.chat.completions.create({
             model: process.env.OPENAI_CHAT_MODEL || 'gpt-4o-mini',
-            messages: [
-                { role: 'system', content: systemPrompt },
-                { role: 'user', content },
-            ],
-            max_tokens: 400,
+            messages,
+            max_tokens: 1024,
+            temperature: 0.7,
+            top_p: 0.95,
+            presence_penalty: 0.2,
+            frequency_penalty: 0.15,
         });
         const text = completion.choices[0]?.message?.content?.trim();
         return text || null;
     }
 
     if (geminiAi) {
+        const geminiContents = messages
+            .filter((m) => m.role !== 'system')
+            .map((m) => ({
+                role: m.role === 'assistant' ? 'model' : 'user',
+                parts: [{ text: m.content }],
+            }));
         const result = await geminiAi.models.generateContent({
             model: process.env.GEMINI_CHAT_MODEL || 'gemini-2.0-flash',
-            contents: content,
-            config: { systemInstruction: systemPrompt },
+            contents: geminiContents.length ? geminiContents : [{ role: 'user', parts: [{ text: content }] }],
+            config: {
+                systemInstruction: messages[0]?.content || systemPrompt,
+                temperature: 0.72,
+                maxOutputTokens: 900,
+            },
         });
         const text = result.text?.trim();
         return text || null;
@@ -165,11 +246,11 @@ async function generateDoctorReply(userText) {
     return null;
 }
 
-async function generateDoctorReplyWithRetry(userText) {
+async function generateDoctorReplyWithRetry(userId, userText, extraContext = '') {
     let lastErr;
     for (let attempt = 1; attempt <= PROVIDER_MAX_ATTEMPTS; attempt++) {
         try {
-            return await generateDoctorReply(userText);
+            return await generateDoctorReply(userId, userText, extraContext);
         } catch (err) {
             lastErr = err;
             if (!isTransientProviderError(err) || attempt === PROVIDER_MAX_ATTEMPTS) {
@@ -236,6 +317,7 @@ router.post('/', auth, async (req, res) => {
 
         const cleanText = (text || '').toLowerCase().trim();
         const hasProvider = !!(openai || geminiAi);
+        const userContext = buildUserContextBlock(req.body);
 
         const clinic = [
             { keywords: ['headache', 'migraine', 'head ache'], response: "I'm really sorry your head hurts — that can wear you down. If you can, try a quieter, dimmer space, sips of water or peppermint tea, and a cool cloth on your forehead. If this is new, severe, or comes with fever or stiff neck, it's worth checking in with a clinician." },
@@ -245,7 +327,7 @@ router.post('/', auth, async (req, res) => {
             { keywords: ['hi', 'hello', 'hey', 'start'], response: "Hi — I'm glad you're here. However you're feeling today is valid. What's been on your mind, or what would feel supportive to talk through?" }
         ];
 
-        const fallbackMatch = clinic.find(c => c.keywords.some(k => cleanText.includes(k)));
+        const fallbackMatch = clinic.find((c) => c.keywords.some((k) => matchesKeyword(cleanText, k)));
 
         if (fallbackMatch && !hasProvider) {
             await db.saveChatMessage({ userId: req.user.id, role: 'ai', text: fallbackMatch.response });
@@ -271,22 +353,37 @@ router.post('/', auth, async (req, res) => {
         let aiText = null;
         let aiWarning = null;
         try {
-            aiText = await generateDoctorReplyWithRetry(text);
+            aiText = await generateDoctorReplyWithRetry(req.user.id, text, userContext);
         } catch (err) {
             const detail = err?.message || String(err);
             console.error('[Dr. Najaat] Provider error:', detail);
             const isTimeout = /timeout|timed out|etimedout|408|504/i.test(detail);
-            aiWarning = isTimeout
-                ? 'The AI service timed out after several tries. Showing a short fallback — try again in a moment.'
-                : 'The AI service could not complete this reply. Showing a short fallback message — try again shortly.';
+            const isAuth = /401|403|invalid.*api.*key|incorrect api key|authentication/i.test(detail);
+            if (isAuth) {
+                aiWarning = 'Server AI key may be invalid or expired. Check OPENAI_API_KEY on Render.';
+            } else if (isTimeout) {
+                aiWarning = 'The AI service timed out. Tap send again in a moment.';
+            } else {
+                aiWarning = `AI error: ${detail.slice(0, 120)}`;
+            }
         }
 
-        const finalText = aiText || "I'm with you — give me one more moment. What part of today feels heaviest: your body, your mood, or your energy?";
+        if (!aiText || !String(aiText).trim()) {
+            const retryText =
+                "I couldn't finish a thoughtful reply just now — that's on my side, not yours. Please tap send again; if it keeps happening, the app's server may need its AI key checked.";
+            await db.saveChatMessage({ userId: req.user.id, role: 'ai', text: retryText });
+            return res.json({
+                aiResponse: retryText,
+                aiConfigured: true,
+                aiProvider: openai ? 'openai' : 'gemini',
+                aiWarning: aiWarning || 'AI returned an empty reply.',
+            });
+        }
 
-        await db.saveChatMessage({ userId: req.user.id, role: 'ai', text: finalText });
+        await db.saveChatMessage({ userId: req.user.id, role: 'ai', text: aiText });
 
         res.json({
-            aiResponse: finalText,
+            aiResponse: aiText,
             aiConfigured: true,
             aiProvider: openai ? 'openai' : 'gemini',
             ...(aiWarning ? { aiWarning } : {}),
@@ -305,5 +402,19 @@ router.post('/', auth, async (req, res) => {
         });
     }
 });
+
+function getChatAiStatus() {
+    return {
+        aiConfigured: !!(openai || geminiAi),
+        aiProvider: openai ? 'openai' : geminiAi ? 'gemini' : 'none',
+        model: openai
+            ? process.env.OPENAI_CHAT_MODEL || 'gpt-4o-mini'
+            : geminiAi
+              ? process.env.GEMINI_CHAT_MODEL || 'gemini-2.0-flash'
+              : null,
+    };
+}
+
+router.getChatAiStatus = getChatAiStatus;
 
 module.exports = router;

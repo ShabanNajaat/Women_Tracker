@@ -14,9 +14,19 @@ class LlmReply {
 class ServerLLMService {
   final ApiService _api = ApiService();
 
-  Future<LlmReply> getResponse(String prompt) async {
+  Future<LlmReply> getResponse(
+    String prompt, {
+    Map<String, dynamic>? context,
+  }) async {
     try {
-      final res = await _api.post('/chat', body: {'role': 'user', 'text': prompt});
+      final body = <String, dynamic>{
+        'role': 'user',
+        'text': prompt,
+      };
+      if (context != null && context.isNotEmpty) {
+        body['context'] = context;
+      }
+      final res = await _api.post('/chat', body: body);
       if (res.statusCode == 401) {
         return const LlmReply(
           'Your session expired. Sign out and sign in again to keep chatting.',
@@ -29,9 +39,17 @@ class ServerLLMService {
           if (data is Map) {
             final ai = data['aiResponse'];
             if (ai != null && ai.toString().trim().isNotEmpty) {
+              final configured = data['aiConfigured'] != false;
+              final provider = data['aiProvider']?.toString() ?? '';
               final notice = data['aiNotice']?.toString();
               final warn = data['aiWarning']?.toString();
               final bits = <String>[
+                if (!configured)
+                  'Basic mode only — set OPENAI_API_KEY on Render and redeploy for full AI answers.',
+                if (configured && provider == 'openai')
+                  'Full AI active (OpenAI).',
+                if (configured && provider.isNotEmpty && provider != 'openai')
+                  'Using $provider for replies.',
                 if (notice != null && notice.isNotEmpty) notice,
                 if (warn != null && warn.isNotEmpty) warn,
               ];

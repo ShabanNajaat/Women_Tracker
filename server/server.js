@@ -13,8 +13,41 @@ const db = require('./db');
 
 // Database Connection
 const mongoUri = process.env.MONGO_URI || process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/glow_wellness';
+let lastMongoError = '';
 function maskMongoUri(uri) {
     return String(uri).replace(/:([^:@/]+)@/, ':***@');
+}
+
+const mongoOptions = {
+    serverSelectionTimeoutMS: 20000,
+    family: 4,
+};
+
+function connectMongo() {
+    if (mongoose.connection.readyState === 1) return Promise.resolve();
+    return mongoose.connect(mongoUri, mongoOptions).then(async () => {
+        lastMongoError = '';
+        console.log(`✓ MongoDB connected: ${maskMongoUri(mongoUri)}`);
+        try {
+            await db.seedAmaIfEmpty();
+        } catch (e) {
+            console.warn('[ama] seed skipped:', e?.message || e);
+        }
+    });
+}
+
+function scheduleMongoRetries() {
+    const delays = [15000, 30000, 60000, 120000];
+    delays.forEach((ms) => {
+        setTimeout(() => {
+            if (mongoose.connection.readyState === 1) return;
+            console.log(`[mongo] retrying connection in background (${ms / 1000}s)...`);
+            connectMongo().catch((err) => {
+                lastMongoError = err?.message || String(err);
+                console.log('[mongo] retry failed:', lastMongoError);
+            });
+        }, ms);
+    });
 }
 
 function mountWebApp() {
@@ -38,23 +71,15 @@ function startHttpServer() {
     });
 }
 
-mongoose.connect(mongoUri, {
-    serverSelectionTimeoutMS: 8000,
-})
-  .then(async () => {
-      console.log(`✓ MongoDB connected: ${maskMongoUri(mongoUri)}`);
-      try {
-          await db.seedAmaIfEmpty();
-      } catch (e) {
-          console.warn('[ama] seed skipped:', e?.message || e);
-      }
-      startHttpServer();
-  })
+connectMongo()
+  .then(() => startHttpServer())
   .catch((err) => {
+      lastMongoError = err?.message || String(err);
       console.log('--- PRESENTATION SAFE MODE ACTIVATED ---');
       console.log(`MongoDB not reachable (${maskMongoUri(mongoUri)}).`);
-      console.log(err?.message || err);
+      console.log(lastMongoError);
       console.log('Falling back to in-memory store + server/data/memory_users.json for auth.');
+      scheduleMongoRetries();
       startHttpServer();
   });
 
@@ -86,12 +111,23 @@ app.use(cors({
 app.use(express.json({ limit: '2mb' }));
 app.use('/uploads', express.static(uploadDir));
 
+const chatRouter = require('./routes/chat');
+
 app.get('/api/health', (req, res) => {
-    res.json({
+    const connected = mongoose.connection.readyState === 1;
+    const body = {
         ok: true,
-        mongo: mongoose.connection.readyState === 1,
+        mongo: connected,
         env: process.env.NODE_ENV || 'development',
-    });
+        chat: typeof chatRouter.getChatAiStatus === 'function' ? chatRouter.getChatAiStatus() : {},
+    };
+    if (!connected && lastMongoError) {
+        body.mongoError = lastMongoError;
+    }
+    if (!connected && process.env.NODE_ENV === 'production') {
+        body.mongoHost = maskMongoUri(mongoUri).replace(/^mongodb(\+srv)?:\/\//, '').split('/')[0];
+    }
+    res.json(body);
 });
 
 
@@ -105,7 +141,7 @@ app.post('/api/tracking/upload-voice', upload.single('audio'), (req, res) => {
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/tracking', require('./routes/tracking'));
 app.use('/api/partner', require('./routes/partner'));
-app.use('/api/chat', require('./routes/chat'));
+app.use('/api/chat', chatRouter);
 app.use('/api/community', require('./routes/community'));
 app.use('/api/ama', require('./routes/ama'));
 app.use('/api/forecast', require('./routes/forecast'));

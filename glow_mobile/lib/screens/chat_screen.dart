@@ -15,6 +15,7 @@ import '../services/chat_local_store.dart';
 import '../models/phase_room.dart';
 import '../services/community_service.dart';
 import '../services/cycle_service.dart';
+import '../services/health_log_service.dart';
 import '../services/server_llm_service.dart';
 import '../services/user_data_scope.dart';
 import '../services/wellness_score_service.dart';
@@ -106,9 +107,28 @@ class _ChatScreenState extends State<ChatScreen> {
       _bootstrapDone = true;
     });
     _scrollToBottom();
+    await _checkServerAiStatus();
     if (_api.isAuthenticated) {
       await _syncChatFromServer(scope);
     }
+  }
+
+  Future<void> _checkServerAiStatus() async {
+    try {
+      final res = await _api.get('/health');
+      if (!mounted || res.statusCode != 200) return;
+      final data = jsonDecode(res.body);
+      if (data is! Map) return;
+      final chat = data['chat'];
+      if (chat is! Map) return;
+      final configured = chat['aiConfigured'] == true;
+      if (configured) return;
+      setState(() {
+        _banner =
+            'Dr. Najaat is in basic mode on the server. Add OPENAI_API_KEY in Render → Environment, then redeploy.';
+        _bannerIsError = true;
+      });
+    } catch (_) {}
   }
 
   Future<void> _shareScoresWithCommunity() async {
@@ -167,6 +187,15 @@ class _ChatScreenState extends State<ChatScreen> {
     final trimmed = text.trim();
     if (trimmed.isEmpty) return;
 
+    await _api.init();
+    if (!_api.isAuthenticated) {
+      setState(() {
+        _banner = 'Sign in first — Dr. Najaat AI only works when you are logged in.';
+        _bannerIsError = true;
+      });
+      return;
+    }
+
     final scope = await _api.userScope();
     await ChatLocalStore.instance.appendUserMessage(scope, trimmed);
 
@@ -179,7 +208,26 @@ class _ChatScreenState extends State<ChatScreen> {
     });
     _scrollToBottom();
 
-    final LlmReply reply = await _llmService.getResponse(trimmed);
+    await CycleService.instance.ensureLoaded();
+    await HealthLogService.instance.ensureLoaded();
+    final cycle = CycleService.instance;
+    final phase = cycle.phaseForDay(
+      cycle.currentDayInCycle,
+      cycleLength: cycle.typicalCycleLength,
+    );
+    final todayLog = HealthLogService.instance.logForDate(DateTime.now());
+    final LlmReply reply = await _llmService.getResponse(
+      trimmed,
+      context: {
+        'phase': phase.displayName,
+        'cycleDay': cycle.currentDayInCycle,
+        'cycleLength': cycle.typicalCycleLength,
+        if (todayLog.moodLabel != null && todayLog.moodLabel!.isNotEmpty)
+          'recentMood': todayLog.moodLabel,
+        if (todayLog.energy > 0) 'recentEnergy': '${todayLog.energy}/5',
+        if (todayLog.sleepHours > 0) 'recentSleep': '${todayLog.sleepHours}h',
+      },
+    );
 
     if (!mounted) return;
     setState(() {
