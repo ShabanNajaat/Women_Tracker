@@ -120,6 +120,31 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  void _showWhyGlow() {
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Why Glow Wellness?'),
+        content: const Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('The Problem', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            SizedBox(height: 8),
+            Text('Many women struggle to understand their cycle, symptoms, mood changes, and overall wellness.'),
+            SizedBox(height: 16),
+            Text('The Solution', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            SizedBox(height: 8),
+            Text('Glow Wellness uses AI and tracking tools to make personal health information easier to understand.'),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Close')),
+        ],
+      ),
+    );
+  }
+
   Future<void> _submitEmailAuth() async {
     final email = _email.text.trim().toLowerCase();
     final password = _password.text;
@@ -369,6 +394,18 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       SizedBox(height: 16),
                       TextButton(
+                        onPressed: _showWhyGlow,
+                        child: Text(
+                          'Why Glow Wellness?',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: isLight ? scheme.onSurface : Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      TextButton(
                         onPressed: _showPrivacyNote,
                         child: Text(
                           'Health data stays private — how we treat your information',
@@ -380,7 +417,22 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 40),
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(LucideIcons.lock, size: 14, color: isLight ? scheme.onSurfaceVariant : Colors.white70),
+                          const SizedBox(width: 6),
+                          Text(
+                            'Your wellness data is private and protected.',
+                            style: TextStyle(
+                              color: isLight ? scheme.onSurfaceVariant : Colors.white70,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
                       GlassCard(
                         child: Column(
                           children: [

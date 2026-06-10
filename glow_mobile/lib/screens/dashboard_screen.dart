@@ -79,7 +79,7 @@ class _DashboardScreenState extends State<DashboardScreen> with WidgetsBindingOb
                   children: [
                     Expanded(
                       child: GlowText(
-                        'Glow dashboard',
+                        'Good Morning, Najaat 🌸',
                         style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.w800,
@@ -113,6 +113,106 @@ class _DashboardScreenState extends State<DashboardScreen> with WidgetsBindingOb
                 ] else ...[
                   AnimatedGlassCard(
                     index: 0,
+                    child: GlassCard(
+                      useBackdropBlur: false,
+                      child: Padding(
+                        padding: const EdgeInsets.all(18.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Today\'s Wellness Score', style: TextStyle(color: scheme.onSurfaceVariant, fontSize: 14, fontWeight: FontWeight.w600)),
+                            const SizedBox(height: 8),
+                            Row(
+                              children: [
+                                Text('85', style: TextStyle(color: scheme.primary, fontSize: 40, fontWeight: FontWeight.w800)),
+                                Text('/100', style: TextStyle(color: scheme.onSurfaceVariant, fontSize: 18, fontWeight: FontWeight.w600)),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text('😊 Mood: Good', style: TextStyle(color: scheme.onSurface, fontWeight: FontWeight.w600)),
+                                Text('💧 Hydration: Normal', style: TextStyle(color: scheme.onSurface, fontWeight: FontWeight.w600)),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Text('😴 Sleep: 7h', style: TextStyle(color: scheme.onSurface, fontWeight: FontWeight.w600)),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  AnimatedGlassCard(
+                    index: 1,
+                    child: GlassCard(
+                      useBackdropBlur: false,
+                      child: Padding(
+                        padding: const EdgeInsets.all(18.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(Icons.auto_awesome, color: scheme.tertiary),
+                                const SizedBox(width: 8),
+                                Text('Today\'s Insights', style: TextStyle(color: scheme.onSurface, fontSize: 18, fontWeight: FontWeight.w800)),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            Text('Based on your cycle and symptoms:', style: TextStyle(color: scheme.onSurfaceVariant, fontWeight: FontWeight.w500)),
+                            const SizedBox(height: 12),
+                            Text('• Consider light exercise today\n• Drink more water\n• Track your mood changes', style: TextStyle(color: scheme.onSurface, height: 1.6, fontWeight: FontWeight.w600)),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  AnimatedGlassCard(
+                    index: 2,
+                    child: GlassCard(
+                      useBackdropBlur: false,
+                      child: Padding(
+                        padding: const EdgeInsets.all(18.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(Icons.notifications_active, color: scheme.secondary),
+                                const SizedBox(width: 8),
+                                Text('🔔 Reminders', style: TextStyle(color: scheme.onSurface, fontSize: 18, fontWeight: FontWeight.w800)),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            ListTile(
+                              leading: Icon(Icons.check_circle_outline, color: scheme.primary),
+                              title: const Text('Time to log your symptoms', style: TextStyle(fontWeight: FontWeight.w600)),
+                              contentPadding: EdgeInsets.zero,
+                              dense: true,
+                            ),
+                            ListTile(
+                              leading: Icon(Icons.calendar_today, color: scheme.primary),
+                              title: const Text('Your cycle may start in 3 days', style: TextStyle(fontWeight: FontWeight.w600)),
+                              contentPadding: EdgeInsets.zero,
+                              dense: true,
+                            ),
+                            ListTile(
+                              leading: Icon(Icons.favorite_outline, color: scheme.primary),
+                              title: const Text('Your wellness check-in is ready', style: TextStyle(fontWeight: FontWeight.w600)),
+                              contentPadding: EdgeInsets.zero,
+                              dense: true,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  AnimatedGlassCard(
+                    index: 3,
                     child: DashboardHero(key: ValueKey(_contentEpoch)),
                   ),
                 ],

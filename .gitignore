@@ -16,3 +16,6 @@ glow_mobile/android/keystore/
 # Optional bundled web (build locally with scripts/build-for-live.ps1 -CopyToServer)
 server/public/*
 !server/public/.gitkeep
+
+# Local Netlify folder
+.netlify
