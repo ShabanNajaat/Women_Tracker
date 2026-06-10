@@ -60,6 +60,8 @@ cd "c:\Users\ADMIN\Desktop\WOMEN TRACKER"
 1. [netlify.com](https://www.netlify.com) → **Add new site** → **Deploy manually**.
 2. Drag the folder `glow_mobile\build\web` onto the page.
 3. Copy your site URL, e.g. `https://glow-wellness.netlify.app`.
+4. Install guide (share with users): `https://YOUR-SITE.netlify.app/install.html`
+5. Privacy policy: `https://YOUR-SITE.netlify.app/privacy.html`
 
 ### 4. Finish CORS + Google Sign-In
 
@@ -114,6 +116,9 @@ node server.js
 
 # Production web build (Netlify)
 .\scripts\build-for-live.ps1 -ApiUrl "https://YOUR-API.onrender.com/api"
+
+# Android app (APK for your phone) — see BUILD_ANDROID_APP.md
+.\scripts\build-android-app.ps1 -ApiUrl "https://women-tracker.onrender.com/api"
 
 # All-in-one Render
 .\scripts\build-for-live.ps1 -CopyToServer

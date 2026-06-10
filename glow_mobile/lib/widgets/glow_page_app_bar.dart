@@ -31,11 +31,27 @@ class GlowPageAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     final canPop = Navigator.canPop(context);
+    final scheme = Theme.of(context).colorScheme;
+    final barTheme = Theme.of(context).appBarTheme;
+    final fg = foregroundColor ?? barTheme.foregroundColor ?? scheme.onSurface;
+    final bg = backgroundColor ?? barTheme.backgroundColor ??
+        (scheme.brightness == Brightness.dark
+            ? scheme.surfaceContainerHigh
+            : scheme.surfaceContainerHigh);
+
     return AppBar(
-      title: title,
-      backgroundColor: backgroundColor,
-      foregroundColor: foregroundColor,
-      elevation: elevation,
+      title: DefaultTextStyle(
+        style: barTheme.titleTextStyle ?? TextStyle(color: fg, fontWeight: FontWeight.w800, fontSize: 20),
+        child: title,
+      ),
+      backgroundColor: bg,
+      foregroundColor: fg,
+      surfaceTintColor: Colors.transparent,
+      elevation: elevation ?? 0,
+      scrolledUnderElevation: 0,
+      systemOverlayStyle: barTheme.systemOverlayStyle,
+      iconTheme: IconThemeData(color: fg),
+      actionsIconTheme: IconThemeData(color: fg),
       leading: leading ?? (canPop ? const BackButton() : null),
       automaticallyImplyLeading: automaticallyImplyLeading ?? (leading != null || canPop),
       actions: [

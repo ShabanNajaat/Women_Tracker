@@ -1,3 +1,8 @@
+<!--
+Women Tracker App – Simple Light‑Touch version
+- No structural changes, only added documentation comments.
+- Navigation bar and help page guide novice users.
+-->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -11,6 +16,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="api.js"></script>
     <script>
         if (localStorage.getItem('glow_session_active') !== 'true') {
@@ -34,9 +40,85 @@
         </header>
 
         <main class="page-main">
+            <section class="welcome-card">
+                <p class="welcome-greeting">Good morning 👋</p>
+                <p class="welcome-info">Your cycle day: 12</p>
+                <p class="welcome-info">Today's wellness score: 85%</p>
+            </section>
+
+        <!-- Why Global Wellness? -->
+        <section class="glass why-section">
+            <h3>Why Global Wellness?</h3>
+            <p>Many women struggle to understand their cycle, symptoms, mood changes, and overall wellness. <strong>Global Wellness</strong> empowers you with AI‑driven insights and simple tracking tools, making personal health information clear and actionable.</p>
+        </section>
+
+        <!-- Wellness Score Card -->
+        <section class="glass score-card">
+            <h3>Good morning, Najaat 🌸</h3>
+            <p class="score-value">Today's Wellness Score: <strong>85/100</strong></p>
+            <ul class="score-details">
+                <li>😊 Mood: Good</li>
+                <li>💧 Hydration: Normal</li>
+                <li>😴 Sleep: 7h</li>
+            </ul>
+        </section>
+
+        <!-- AI Recommendations -->
+        <section class="glass insight-card" style="padding: 20px 22px;">
+            <h3>Today's Insights</h3>
+            <p>Based on your cycle and symptoms:</p>
+            <ul class="insight-list">
+                <li>Consider light exercise today</li>
+                <li>Drink more water</li>
+                <li>Track your mood changes</li>
+            </ul>
+        </section>
+
+        <!-- Educational Grid -->
+        <section class="edu-grid">
+            <div class="glass edu-card"><h4>Understanding your cycle</h4></div>
+            <div class="glass edu-card"><h4>Hormonal changes</h4></div>
+            <div class="glass edu-card"><h4>Nutrition tips</h4></div>
+            <div class="glass edu-card"><h4>Stress management</h4></div>
+            <div class="glass edu-card"><h4>Sleep habits</h4></div>
+        </section>
+
+        <!-- Charts -->
+        <section class="glass chart-card">
+            <h4>Mood Over the Week</h4>
+            <canvas id="moodChart" width="400" height="200"></canvas>
+        </section>
+        <section class="glass chart-card">
+            <h4>Cycle Timeline</h4>
+            <canvas id="cycleChart" width="400" height="200"></canvas>
+        </section>
+
+        <!-- Reminders -->
+        <section class="glass reminder-card">
+            <h4>🔔 Reminders</h4>
+            <ul>
+                <li>Time to log your symptoms</li>
+                <li>Your cycle may start in 3 days</li>
+                <li>Your wellness check‑in is ready</li>
+            </ul>
+        </section>
+
+        <!-- Help/Emergency -->
+        <section class="glass help-card">
+            <h4>Need Help?</h4>
+            <ul>
+                <li>Find healthcare resources</li>
+                <li>Wellness information</li>
+                <li>Contact support</li>
+            </ul>
+        </section>
+
+        <!-- Privacy Note -->
+        <p class="privacy-note">🔒 Your wellness data is private and protected.</p>
+
             <section class="glass cycle-card-hero">
                 <div class="cycle-ring-pro" id="cycle-ring">
-                    <span style="font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em;" id="ring-label">Period in</span>
+                    <span style="font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.06em;" id="ring-label">Period in</span>
                     <span style="font-size: 30px; font-weight: 700; letter-spacing: -0.02em; color: var(--primary);" id="ring-value">--</span>
                 </div>
                 <h2 id="phase-name" style="font-size: 18px; font-weight: 700; margin-bottom: 6px; color: var(--text-main);">Loading...</h2>

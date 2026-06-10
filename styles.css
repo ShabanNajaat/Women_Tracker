@@ -218,7 +218,7 @@ html.theme-dark html {
 .page-subtitle {
     margin-top: 6px;
     font-size: 14px;
-    color: var(--text-muted);
+    color: var(--text-secondary);
     font-weight: 500;
     max-width: 36ch;
 }
@@ -293,6 +293,28 @@ html.theme-dark html {
 [data-theme="dark"] .cycle-card-hero,
 html.theme-dark .cycle-card-hero {
     background: linear-gradient(165deg, rgba(82, 72, 118, 0.92) 0%, rgba(42, 34, 58, 0.96) 100%);
+}
+
+/* Welcome card styling */
+.welcome-card {
+    background: var(--bg-card);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: 16px 22px;
+    text-align: center;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-sm), var(--glass-inset);
+}
+.welcome-greeting {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-main);
+    margin-bottom: 8px;
+}
+.welcome-info {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin: 4px 0;
 }
 
 @media (prefers-color-scheme: dark) {

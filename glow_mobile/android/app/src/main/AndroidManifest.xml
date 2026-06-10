@@ -11,7 +11,7 @@
     <uses-permission android:name="android.permission.health.READ_HEART_RATE"/>
 
     <application
-        android:label="glow_mobile"
+        android:label="Glow Wellness"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

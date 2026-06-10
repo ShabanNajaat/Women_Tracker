@@ -11,5 +11,18 @@
       "cycleLength": 28,
       "periodLength": 5
     }
+  },
+  {
+    "_id": "tfrb88",
+    "id": "tfrb88",
+    "inviteCode": "CBY38S",
+    "email": "najaatmohammedshaban@gmail.com",
+    "name": "Shaban Najaat",
+    "password": "$2b$10$Fwnx7LQ2l2jfhsz9o6B9geUVWi/jFexaIkJu97y5AcKGA2goU7kmq",
+    "glowPoints": 0,
+    "profile": {
+      "cycleLength": 28,
+      "periodLength": 5
+    }
   }
 ]

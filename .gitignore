@@ -10,6 +10,8 @@ server/node_modules/
 glow_mobile/build/
 glow_mobile/.dart_tool/
 glow_mobile/.flutter-plugins-dependencies
+glow_mobile/android/key.properties
+glow_mobile/android/keystore/
 
 # Optional bundled web (build locally with scripts/build-for-live.ps1 -CopyToServer)
 server/public/*

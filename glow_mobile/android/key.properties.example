@@ -1,0 +1,7 @@
+# Copy to android/key.properties (never commit key.properties).
+# Create keystore: see STORE_RELEASE.md or scripts/create-android-keystore.ps1
+
+storePassword=YOUR_KEYSTORE_PASSWORD
+keyPassword=YOUR_KEY_PASSWORD
+keyAlias=glow-upload
+storeFile=../keystore/glow-upload-keystore.jks

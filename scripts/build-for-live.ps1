@@ -16,7 +16,7 @@ if ($ApiUrl.Trim().Length -gt 0) {
   $defineArgs += "--dart-define=API_BASE_URL=$($ApiUrl.Trim())"
   Write-Host "API_BASE_URL=$($ApiUrl.Trim())" -ForegroundColor Cyan
 } else {
-  Write-Host "No API_BASE_URL — web will use same-origin /api (Render all-in-one) or localhost:8081 locally." -ForegroundColor Yellow
+  Write-Host "No API_BASE_URL - web uses same-origin /api (Render all-in-one) or localhost:8081 locally." -ForegroundColor Yellow
 }
 
 Write-Host "Building Flutter web (release)..." -ForegroundColor Cyan

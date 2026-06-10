@@ -1,8 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'glow_tokens.dart';
 
-/// Material 3 themes — light: elegant pink; dark: Settings-style true black + lavender glow accents.
+/// Material 3 themes — light: elegant pink; dark: true black + lavender accents.
 abstract final class GlowAppTheme {
+  static AppBarTheme _appBarTheme(ColorScheme scheme) {
+    final isDark = scheme.brightness == Brightness.dark;
+    // Dark: true black bar + light icons/text. Light: soft pink bar + plum text.
+    final barBg = isDark ? GlowTokens.darkNeutralPane : scheme.surfaceContainerHigh;
+    final barFg = scheme.onSurface;
+    return AppBarTheme(
+      backgroundColor: barBg,
+      foregroundColor: barFg,
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      surfaceTintColor: Colors.transparent,
+      iconTheme: IconThemeData(color: barFg),
+      actionsIconTheme: IconThemeData(color: barFg),
+      titleTextStyle: TextStyle(
+        color: barFg,
+        fontSize: 20,
+        fontWeight: FontWeight.w800,
+      ),
+      systemOverlayStyle: isDark
+          ? SystemUiOverlayStyle.light.copyWith(statusBarColor: Colors.transparent)
+          : SystemUiOverlayStyle.dark.copyWith(statusBarColor: Colors.transparent),
+    );
+  }
+
   static ThemeData light() {
     final scheme = ColorScheme.fromSeed(
       seedColor: GlowTokens.rose,
@@ -28,21 +53,11 @@ abstract final class GlowAppTheme {
       brightness: Brightness.light,
       colorScheme: scheme,
       scaffoldBackgroundColor: scheme.surface,
-      appBarTheme: AppBarTheme(
-        backgroundColor: Colors.transparent,
-        foregroundColor: scheme.onSurface,
-        elevation: 0,
-        titleTextStyle: TextStyle(
-          color: scheme.onSurface,
-          fontSize: 20,
-          fontWeight: FontWeight.w800,
-        ),
-      ),
+      appBarTheme: _appBarTheme(scheme),
     );
   }
 
   static ThemeData dark() {
-    // Same neutrals as Settings (0x0D / 0x16 / card). Lavender = glow accents.
     const scheme = ColorScheme(
       brightness: Brightness.dark,
       primary: GlowTokens.lavender,
@@ -67,7 +82,7 @@ abstract final class GlowAppTheme {
       inverseSurface: Color(0xFFE8E0F0),
       onInverseSurface: Color(0xFF1E1428),
       inversePrimary: Color(0xFF6B5089),
-      surfaceTint: GlowTokens.lavender,
+      surfaceTint: Colors.transparent,
       surfaceContainerHighest: GlowTokens.darkNeutralCard,
       surfaceContainerHigh: GlowTokens.darkNeutralPane,
       surfaceContainer: Color(0xFF141414),
@@ -81,16 +96,7 @@ abstract final class GlowAppTheme {
       brightness: Brightness.dark,
       colorScheme: scheme,
       scaffoldBackgroundColor: scheme.surface,
-      appBarTheme: AppBarTheme(
-        backgroundColor: Colors.transparent,
-        foregroundColor: scheme.onSurface,
-        elevation: 0,
-        titleTextStyle: TextStyle(
-          color: scheme.onSurface,
-          fontSize: 20,
-          fontWeight: FontWeight.w800,
-        ),
-      ),
+      appBarTheme: _appBarTheme(scheme),
     );
   }
 }

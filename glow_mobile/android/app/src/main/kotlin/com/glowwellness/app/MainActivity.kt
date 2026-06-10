@@ -1,4 +1,4 @@
-package com.example.glow_mobile
+package com.glowwellness.app
 
 import io.flutter.embedding.android.FlutterFragmentActivity
 

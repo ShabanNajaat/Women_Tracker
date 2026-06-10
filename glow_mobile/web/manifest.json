@@ -1,11 +1,11 @@
 {
-    "name": "glow_mobile",
-    "short_name": "glow_mobile",
+    "name": "Glow Wellness",
+    "short_name": "Glow",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#FFF8FB",
+    "theme_color": "#D94F8C",
+    "description": "Cycle tracking, wellness chat, and community for women.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

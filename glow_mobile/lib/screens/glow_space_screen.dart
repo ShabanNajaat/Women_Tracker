@@ -4,6 +4,8 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../widgets/animated_glass_card.dart';
 import '../widgets/glass_card.dart';
 import 'wellness_library_screen.dart';
+import 'exercise_timer_screen.dart';
+import '../widgets/beginner_tools_row.dart';
 
 /// “Glow Space” — calm corner / blue-purple themed wellness space (roadmap).
 class GlowSpaceScreen extends StatelessWidget {
@@ -46,9 +48,60 @@ class GlowSpaceScreen extends StatelessWidget {
                 height: 1.45,
               ),
             ),
-            const SizedBox(height: 24),
+            const BeginnerToolsRow(startIndex: 0),
+            const SizedBox(height: 20),
             AnimatedGlassCard(
-              index: 0,
+              index: 1,
+              child: GlassCard(
+                useBackdropBlur: false,
+                child: InkWell(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => const ExerciseTimerScreen(),
+                      ),
+                    );
+                  },
+                  borderRadius: BorderRadius.circular(20),
+                  child: Padding(
+                    padding: const EdgeInsets.all(4),
+                    child: Row(
+                      children: [
+                        Icon(LucideIcons.timer, color: scheme.tertiary, size: 28),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Exercise timer',
+                                style: TextStyle(
+                                  color: scheme.onSurface,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              Text(
+                                '30-second squats, planks, stretches — beep when done.',
+                                style: TextStyle(
+                                  color: scheme.onSurfaceVariant,
+                                  fontSize: 13,
+                                  height: 1.4,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Icon(Icons.chevron_right_rounded, color: scheme.onSurfaceVariant),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            AnimatedGlassCard(
+              index: 2,
               child: GlassCard(
                 useBackdropBlur: false,
                 child: Column(

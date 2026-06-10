@@ -91,6 +91,10 @@ class _HomeScaffoldState extends State<HomeScaffold> {
           appBar: isWide
               ? null
               : AppBar(
+                  backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+                  foregroundColor: Theme.of(context).appBarTheme.foregroundColor,
+                  surfaceTintColor: Colors.transparent,
+                  systemOverlayStyle: Theme.of(context).appBarTheme.systemOverlayStyle,
                   title: Text(_titles[_selectedIndex]),
                   actions: [
                     IconButton(

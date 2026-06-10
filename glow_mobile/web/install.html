@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#D94F8C">
+  <title>Glow Wellness — Install on your phone</title>
+  <style>
+    :root {
+      --pink: #d94f8c;
+      --pink-soft: #ffe8f0;
+      --plum: #4a3040;
+      --muted: #855c72;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 0;
+      line-height: 1.55;
+      color: var(--plum);
+      background: linear-gradient(160deg, #fff8fb 0%, #ffe8f0 45%, #fff8fb 100%);
+      min-height: 100vh;
+    }
+    .wrap { max-width: 520px; margin: 0 auto; padding: 1.5rem 1.25rem 2.5rem; }
+    .hero {
+      text-align: center;
+      padding: 1.5rem 1rem;
+      background: white;
+      border-radius: 24px;
+      box-shadow: 0 8px 32px rgba(217, 79, 140, 0.12);
+      margin-bottom: 1.25rem;
+    }
+    .hero span { font-size: 3rem; display: block; margin-bottom: 0.5rem; }
+    h1 { color: var(--pink); font-size: 1.65rem; margin: 0 0 0.35rem; }
+    .sub { color: var(--muted); font-size: 0.95rem; margin: 0; }
+    .card {
+      background: white;
+      border-radius: 20px;
+      padding: 1.25rem 1.2rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 4px 20px rgba(74, 48, 64, 0.06);
+    }
+    .card h2 {
+      margin: 0 0 0.75rem;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    ol { margin: 0; padding-left: 1.25rem; }
+    li { margin-bottom: 0.65rem; }
+    li strong { color: var(--pink); }
+    .btn {
+      display: block;
+      text-align: center;
+      background: linear-gradient(135deg, #e895b5, #d94f8c);
+      color: white;
+      text-decoration: none;
+      font-weight: 700;
+      padding: 0.95rem 1.2rem;
+      border-radius: 16px;
+      margin-top: 1rem;
+      font-size: 1.05rem;
+    }
+    .btn-outline {
+      background: white;
+      color: var(--pink);
+      border: 2px solid var(--pink);
+      margin-top: 0.65rem;
+    }
+    .link-box {
+      background: var(--pink-soft);
+      border-radius: 12px;
+      padding: 0.75rem;
+      font-size: 0.85rem;
+      word-break: break-all;
+      margin-top: 0.75rem;
+    }
+    .note {
+      font-size: 0.88rem;
+      color: var(--muted);
+      margin-top: 1rem;
+      padding: 0.75rem;
+      background: #fff;
+      border-radius: 12px;
+      border-left: 4px solid var(--pink);
+    }
+    footer { text-align: center; font-size: 0.8rem; color: var(--muted); margin-top: 1.5rem; }
+    footer a { color: var(--pink); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <span>🌸</span>
+      <h1>Install Glow Wellness</h1>
+      <p class="sub">Free — no app store needed. Add to your home screen in a few taps.</p>
+    </div>
+
+    <div class="card">
+      <h2>🤖 Android (Chrome)</h2>
+      <ol>
+        <li>Open <strong>Chrome</strong> and go to the Glow link below.</li>
+        <li>Tap the <strong>menu</strong> (⋮ three dots, top right).</li>
+        <li>Tap <strong>Install app</strong> or <strong>Add to Home screen</strong>.</li>
+        <li>Confirm — the <strong>Glow</strong> icon appears on your home screen.</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h2>🍎 iPhone (Safari)</h2>
+      <ol>
+        <li>Open <strong>Safari</strong> (must be Safari, not Chrome).</li>
+        <li>Go to the Glow link below.</li>
+        <li>Tap <strong>Share</strong> (square with arrow).</li>
+        <li>Scroll and tap <strong>Add to Home Screen</strong>.</li>
+        <li>Tap <strong>Add</strong> — open Glow from your home screen anytime.</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h2>🔗 App link</h2>
+      <p style="margin:0 0 0.5rem;">Share this with friends or scan a QR code pointing here:</p>
+      <div class="link-box" id="app-link">https://tubular-pixie-00c69b.netlify.app</div>
+      <a class="btn" href="/" id="open-app">Open Glow Wellness</a>
+      <a class="btn btn-outline" href="/privacy.html">Privacy policy</a>
+    </div>
+
+    <p class="note">
+      <strong>Tip:</strong> You need internet the first time. After that, many screens work offline for viewing; sign-in and chat need the server.
+    </p>
+
+    <footer>
+      <a href="/">Back to app</a> · <a href="/privacy.html">Privacy</a>
+    </footer>
+  </div>
+  <script>
+    (function () {
+      var origin = window.location.origin;
+      var appUrl = origin + '/';
+      var linkEl = document.getElementById('app-link');
+      var openBtn = document.getElementById('open-app');
+      if (linkEl) linkEl.textContent = origin;
+      if (openBtn) openBtn.href = appUrl;
+    })();
+  </script>
+</body>
+</html>

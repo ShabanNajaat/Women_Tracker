@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'services/api_service.dart';
 import 'sqflite_platform_stub.dart'
@@ -59,14 +60,21 @@ class GlowApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           builder: (context, child) {
             final mq = MediaQuery.of(context);
-            return MediaQuery(
-              data: mq.copyWith(
-                textScaler: mq.textScaler.clamp(
-                  minScaleFactor: 0.85,
-                  maxScaleFactor: 1.25,
+            final isDark = Theme.of(context).brightness == Brightness.dark;
+            final overlay = isDark
+                ? SystemUiOverlayStyle.light.copyWith(statusBarColor: Colors.transparent)
+                : SystemUiOverlayStyle.dark.copyWith(statusBarColor: Colors.transparent);
+            return AnnotatedRegion<SystemUiOverlayStyle>(
+              value: overlay,
+              child: MediaQuery(
+                data: mq.copyWith(
+                  textScaler: mq.textScaler.clamp(
+                    minScaleFactor: 0.85,
+                    maxScaleFactor: 1.25,
+                  ),
                 ),
+                child: child ?? const SizedBox.shrink(),
               ),
-              child: child ?? const SizedBox.shrink(),
             );
           },
           theme: GlowAppTheme.light(),

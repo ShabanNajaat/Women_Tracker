@@ -11,6 +11,7 @@ import '../services/challenge_service.dart';
 import '../services/cycle_service.dart';
 import '../widgets/thirty_day_challenge_card.dart';
 import '../widgets/wellness_insights_carousel.dart';
+import '../widgets/beginner_tools_row.dart';
 import 'ai_forecast_screen.dart';
 import 'health_insights_screen.dart';
 import 'personalization_hub_screen.dart';
@@ -114,6 +115,10 @@ class _DashboardScreenState extends State<DashboardScreen> with WidgetsBindingOb
                     index: 0,
                     child: DashboardHero(key: ValueKey(_contentEpoch)),
                   ),
+                ],
+                if (!_loadingHero) ...[
+                  const BeginnerToolsRow(startIndex: 3),
+                  const SizedBox(height: 20),
                 ],
                 const SizedBox(height: 28),
                 Center(

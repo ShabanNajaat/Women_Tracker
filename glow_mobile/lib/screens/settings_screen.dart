@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../services/api_service.dart';
 import '../services/user_data_scope.dart';
@@ -21,6 +22,9 @@ import '../widgets/fertility_mode_section.dart';
 import '../widgets/glow_page_app_bar.dart';
 import '../widgets/wearable_settings_section.dart';
 import 'login_screen.dart';
+import 'app_guide_screen.dart';
+import 'exercise_timer_screen.dart';
+import '../services/glow_web_links.dart';
 
 class _NavItem {
   const _NavItem({
@@ -920,6 +924,49 @@ class _SettingsScreenState extends State<SettingsScreen> {
         Text(
           'Glow Wellness helps you track and learn — not a substitute for a clinician.',
           style: TextStyle(color: scheme.onSurfaceVariant, fontSize: 14, height: 1.45),
+        ),
+        const SizedBox(height: 20),
+        FilledButton.tonalIcon(
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute<void>(builder: (_) => const AppGuideScreen()),
+            );
+          },
+          icon: const Icon(Icons.menu_book_rounded),
+          label: const Text('Open Glow guide (meet Glowie)'),
+          style: FilledButton.styleFrom(
+            minimumSize: const Size(double.infinity, 48),
+            alignment: Alignment.centerLeft,
+          ),
+        ),
+        const SizedBox(height: 10),
+        OutlinedButton.icon(
+          onPressed: () async {
+            final uri = Uri.parse(GlowWebLinks.installPage);
+            if (await canLaunchUrl(uri)) {
+              await launchUrl(uri, mode: LaunchMode.externalApplication);
+            }
+          },
+          icon: const Icon(Icons.install_mobile_outlined),
+          label: const Text('How to install on your phone'),
+          style: OutlinedButton.styleFrom(
+            minimumSize: const Size(double.infinity, 48),
+            alignment: Alignment.centerLeft,
+          ),
+        ),
+        const SizedBox(height: 10),
+        OutlinedButton.icon(
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute<void>(builder: (_) => const ExerciseTimerScreen()),
+            );
+          },
+          icon: const Icon(Icons.timer_outlined),
+          label: const Text('Exercise timer'),
+          style: OutlinedButton.styleFrom(
+            minimumSize: const Size(double.infinity, 48),
+            alignment: Alignment.centerLeft,
+          ),
         ),
         const SizedBox(height: 28),
         AboutListTile(
