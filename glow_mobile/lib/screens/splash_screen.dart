@@ -1,9 +1,13 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../services/api_service.dart';
 import '../widgets/glass_background.dart';
 import '../widgets/home_scaffold.dart';
 import '../theme/glow_tokens.dart';
 import 'login_screen.dart';
+import 'privacy_consent_screen.dart';
+import 'create_username_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -20,14 +24,40 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _navigateAfterSplash() async {
+    final prefs = await SharedPreferences.getInstance();
+    final privacyAccepted = prefs.getBool('privacy_accepted') ?? false;
+
     await ApiService().init();
     var goHome = ApiService().isAuthenticated;
+    bool hasUsername = false;
+
     if (goHome) {
       goHome = await ApiService().validateToken();
+      if (goHome) {
+        final res = await ApiService().get('/auth/profile');
+        if (res.statusCode == 200) {
+          try {
+            final data = jsonDecode(res.body);
+            hasUsername = data['username'] != null && data['username'].toString().trim().isNotEmpty;
+          } catch (_) {}
+        }
+      }
     }
+
     await Future.delayed(const Duration(milliseconds: 900));
     if (!mounted) return;
-    final next = goHome ? const HomeScaffold() : const LoginScreen();
+
+    Widget next;
+    if (!privacyAccepted) {
+      next = const PrivacyConsentScreen();
+    } else if (!goHome) {
+      next = const LoginScreen();
+    } else if (!hasUsername) {
+      next = const CreateUsernameScreen();
+    } else {
+      next = const HomeScaffold();
+    }
+
     Navigator.of(context).pushReplacement(MaterialPageRoute<void>(builder: (_) => next));
   }
 

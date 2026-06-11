@@ -11,8 +11,8 @@ function jsonUser(doc) {
     if (!doc) return null;
     const o = typeof doc.toObject === 'function' ? doc.toObject() : { ...doc };
     const id = o.id || o._id?.toString?.() || o._id;
-    return {
         id: String(id),
+        username: o.username,
         name: o.name,
         email: o.email,
         photo: o.photo != null && String(o.photo).trim() !== '' ? String(o.photo) : null,
@@ -477,6 +477,47 @@ router.post('/award-points', auth, async (req, res) => {
 // @route   POST api/auth/reset-password
 router.post('/reset-password', async (req, res) => {
     res.json({ success: true, message: 'If that email exists, a reset link has been sent.' });
+});
+
+// @route   POST api/auth/set-username
+router.post('/set-username', auth, async (req, res) => {
+    let { username } = req.body;
+    try {
+        if (!username) return sendError(res, 400, { code: 'validation', message: 'Username is required' });
+        
+        username = username.toString().trim().toLowerCase();
+        
+        if (username.includes(' ')) {
+            return sendError(res, 400, { code: 'validation', message: 'Username cannot contain spaces' });
+        }
+        
+        if (username.length < 3) {
+            return sendError(res, 400, { code: 'validation', message: 'Username must be at least 3 characters' });
+        }
+
+        const existing = await db.findUserByQuery({ username });
+        if (existing) {
+            if (existing.id === req.user.id) {
+                return res.json({ success: true, user: jsonUser(existing) });
+            }
+            return sendError(res, 400, { code: 'username_taken', message: 'This username is already taken' });
+        }
+
+        const user = await db.findUserById(req.user.id);
+        if (!user) return sendError(res, 404, { code: 'not_found', message: 'User not found' });
+
+        user.username = username;
+        await db.saveUser(user);
+        
+        res.json({ success: true, user: jsonUser(user) });
+    } catch (err) {
+        console.error(err.message);
+        sendError(res, 500, {
+            code: 'server_error',
+            message: 'Server error',
+            devDetail: err.message,
+        });
+    }
 });
 
 module.exports = router;

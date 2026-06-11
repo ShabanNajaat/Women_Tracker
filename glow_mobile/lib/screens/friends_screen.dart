@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../services/api_service.dart';
 import 'direct_message_screen.dart';
+import 'package:http/http.dart' as http;
 
 class FriendsScreen extends StatefulWidget {
   const FriendsScreen({super.key});
@@ -18,6 +19,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
   List<dynamic> _pendingIncoming = [];
   List<dynamic> _pendingOutgoing = [];
   List<dynamic> _searchResults = [];
+  List<dynamic> _suggested = [];
   final TextEditingController _searchController = TextEditingController();
 
   @override
@@ -36,6 +38,12 @@ class _FriendsScreenState extends State<FriendsScreen> {
           _friends = data['friends'] ?? [];
           _pendingIncoming = data['pendingIncoming'] ?? [];
           _pendingOutgoing = data['pendingOutgoing'] ?? [];
+        });
+      }
+      final resSug = await _api.get('/friends/suggested');
+      if (resSug.statusCode == 200) {
+        setState(() {
+          _suggested = jsonDecode(resSug.body);
         });
       }
     } catch (e) {
@@ -129,6 +137,17 @@ class _FriendsScreenState extends State<FriendsScreen> {
                       ),
                     )),
                   ],
+                  if (_suggested.isNotEmpty && _searchResults.isEmpty) ...[
+                    const SizedBox(height: 16),
+                    _buildSectionTitle('Suggested Friends', scheme),
+                    ..._suggested.map((u) => ListTile(
+                      title: Text(u['username']),
+                      trailing: IconButton(
+                        icon: const Icon(LucideIcons.userPlus),
+                        onPressed: () => _sendFriendRequest(u['_id']),
+                      ),
+                    )),
+                  ],
                   const SizedBox(height: 16),
                   _buildSectionTitle('My Friends', scheme),
                   if (_friends.isEmpty)
@@ -142,12 +161,15 @@ class _FriendsScreenState extends State<FriendsScreen> {
                       child: Text(f['username'][0].toUpperCase(), style: TextStyle(color: scheme.onPrimaryContainer)),
                     ),
                     title: Text(f['username']),
-                    trailing: const Icon(LucideIcons.messageCircle),
-                    onTap: () {
-                      Navigator.push(context, MaterialPageRoute(
-                        builder: (_) => DirectMessageScreen(friendId: f['id'], friendName: f['username'])
-                      ));
-                    },
+                    trailing: IconButton(
+                      icon: const Icon(LucideIcons.messageCircle),
+                      onPressed: () {
+                        Navigator.push(context, MaterialPageRoute(
+                          builder: (_) => DirectMessageScreen(friendId: f['id'], friendName: f['username'])
+                        ));
+                      },
+                    ),
+                    onTap: () => _showFriendProfile(f['id'], f['username']),
                   )),
                 ],
               ),
@@ -179,6 +201,65 @@ class _FriendsScreenState extends State<FriendsScreen> {
         title,
         style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: scheme.onSurface),
       ),
+    );
+  }
+
+  Future<void> _showFriendProfile(String friendId, String friendName) async {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (ctx) {
+        return FutureBuilder<http.Response>(
+          future: _api.get('/friends/shared/$friendId'),
+          builder: (ctx, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const SizedBox(height: 200, child: Center(child: CircularProgressIndicator()));
+            }
+            if (snapshot.hasError || !snapshot.hasData || snapshot.data!.statusCode != 200) {
+              return const SizedBox(height: 200, child: Center(child: Text('Could not load profile')));
+            }
+            final data = jsonDecode(snapshot.data!.body);
+            final int streak = data['dailyStreak'] ?? 0;
+            final int points = data['glowPoints'] ?? 0;
+
+            return Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircleAvatar(
+                    radius: 40,
+                    backgroundColor: const Color(0xFFFF8FC8),
+                    child: Text(friendName[0].toUpperCase(), style: const TextStyle(fontSize: 32, color: Colors.white)),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(friendName, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 24),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _buildStatColumn('🔥 Streak', '$streak days'),
+                      _buildStatColumn('✨ Glow Points', '$points'),
+                    ],
+                  ),
+                  const SizedBox(height: 32),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildStatColumn(String label, String value) {
+    return Column(
+      children: [
+        Text(label, style: const TextStyle(color: Colors.white70, fontSize: 14)),
+        const SizedBox(height: 8),
+        Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Color(0xFFFF8FC8))),
+      ],
     );
   }
 }

@@ -11,6 +11,7 @@ import '../theme/glow_tokens.dart';
 import '../widgets/floating_bubbles_background.dart';
 import '../widgets/glass_card.dart';
 import '../widgets/home_scaffold.dart';
+import 'create_username_screen.dart';
 
 /// Optional build-time override. Otherwise the app uses [GET /auth/public-config] (same ID as server `GOOGLE_CLIENT_ID`).
 const _googleClientIdFromEnv = String.fromEnvironment('GOOGLE_SERVER_CLIENT_ID', defaultValue: '');
@@ -233,8 +234,9 @@ class _LoginScreenState extends State<LoginScreen> {
         if (u is Map && u['id'] != null) uid = u['id'].toString();
         await api.persistToken(token, userId: uid);
         if (!mounted) return;
+        final hasUsername = u['username'] != null && u['username'].toString().trim().isNotEmpty;
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute<void>(builder: (_) => const HomeScaffold()),
+          MaterialPageRoute<void>(builder: (_) => hasUsername ? const HomeScaffold() : const CreateUsernameScreen()),
         );
         return;
       }
@@ -336,8 +338,9 @@ class _LoginScreenState extends State<LoginScreen> {
         if (u is Map && u['id'] != null) uid = u['id'].toString();
         await api.persistToken(token, userId: uid);
         if (!mounted) return;
+        final hasUsername = u['username'] != null && u['username'].toString().trim().isNotEmpty;
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute<void>(builder: (_) => const HomeScaffold()),
+          MaterialPageRoute<void>(builder: (_) => hasUsername ? const HomeScaffold() : const CreateUsernameScreen()),
         );
         return;
       }

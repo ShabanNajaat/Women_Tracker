@@ -268,6 +268,13 @@ const db = {
         return Store.users.find((u) => this.normalizeEmail(u.email) === e);
     },
 
+    async findUserByQuery(query) {
+        if (this.isConnected()) return await User.findOne(query);
+        return Store.users.find(u => {
+            return Object.keys(query).every(key => u[key] === query[key]);
+        });
+    },
+
     async findUserByGoogleSub(sub) {
         if (!sub) return null;
         if (this.isConnected()) return await User.findOne({ googleSub: sub });

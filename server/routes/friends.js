@@ -19,6 +19,29 @@ router.get('/search', auth, async (req, res) => {
   }
 });
 
+// Get suggested friends (users not yet friends with the current user)
+router.get('/suggested', auth, async (req, res) => {
+  try {
+    const friendships = await Friendship.find({
+      $or: [{ requester: req.user.id }, { recipient: req.user.id }]
+    });
+
+    const friendIds = friendships.map(f => 
+      f.requester.toString() === req.user.id ? f.recipient.toString() : f.requester.toString()
+    );
+    friendIds.push(req.user.id);
+
+    const suggested = await User.find({
+      _id: { $nin: friendIds },
+      username: { $exists: true, $ne: null }
+    }).select('username').limit(10);
+
+    res.json(suggested);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Get all friends and pending requests
 router.get('/', auth, async (req, res) => {
   try {
@@ -91,6 +114,29 @@ router.post('/respond', auth, async (req, res) => {
     }
 
     res.json({ message: `Request ${action}ed` });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get friend's shared data (streaks, etc.)
+router.get('/shared/:id', auth, async (req, res) => {
+  try {
+    const friendId = req.params.id;
+    // Verify they are actually friends
+    const friendship = await Friendship.findOne({
+      $or: [
+        { requester: req.user.id, recipient: friendId, status: 'accepted' },
+        { requester: friendId, recipient: req.user.id, status: 'accepted' }
+      ]
+    });
+
+    if (!friendship) return res.status(403).json({ error: 'Not friends' });
+
+    const friend = await User.findById(friendId).select('username glowPoints dailyStreak longestStreak profile');
+    if (!friend) return res.status(404).json({ error: 'Friend not found' });
+
+    res.json(friend);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

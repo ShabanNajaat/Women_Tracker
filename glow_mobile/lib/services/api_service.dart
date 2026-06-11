@@ -31,13 +31,22 @@ class ApiService {
       if (host == 'localhost' || host == '127.0.0.1') {
         return 'http://localhost:8081/api';
       }
+      // If hosted on Netlify, API lives on Render
+      if (host.contains('netlify.app')) {
+        return 'https://women-tracker-1.onrender.com/api';
+      }
       // Same host as API (e.g. Render serves build/web + /api together).
       return '$origin/api';
     }
-    return 'http://localhost:8081/api';
+    return 'https://women-tracker-1.onrender.com/api';
   }
 
   String? _token;
+
+  Future<String?> getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('x-auth-token');
+  }
 
   Future<void> init() async {
     final prefs = await SharedPreferences.getInstance();

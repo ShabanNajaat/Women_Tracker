@@ -29,6 +29,7 @@ dependencies:
   google_fonts: ^6.2.1
   fl_chart: ^0.69.0
   health: ^11.1.1
+  socket_io_client: ^3.1.5
 
 dev_dependencies:
   flutter_test:
