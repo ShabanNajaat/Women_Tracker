@@ -151,5 +151,6 @@ app.use('/api/chat', chatRouter);
 app.use('/api/community', require('./routes/community'));
 app.use('/api/ama', require('./routes/ama'));
 app.use('/api/forecast', require('./routes/forecast'));
+app.use('/api/friends', require('./routes/friends'));
 
 const PORT = Number(process.env.PORT) || 8081;
