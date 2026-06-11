@@ -61,6 +61,15 @@ function signTokenAndRespond(res, userDoc) {
     });
 }
 
+// @route  GET api/auth/public-config
+// @desc   Returns non-secret config the client needs at startup (Google OAuth web client ID)
+// @access Public
+router.get('/public-config', (req, res) => {
+    const audiences = getGoogleAudiences();
+    const webClientId = audiences.length > 0 ? audiences[0] : null;
+    res.json({ googleClientId: webClientId || null });
+});
+
 let googleOAuthClient;
 function getGoogleAudiences() {
     const raw = process.env.GOOGLE_CLIENT_ID || '';
