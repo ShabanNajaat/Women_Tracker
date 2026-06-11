@@ -545,45 +545,57 @@ class _DashboardScreenState extends State<DashboardScreen> with WidgetsBindingOb
                   index: _loadingHero ? 0 : 3,
                   child: GlassCard(
                     useBackdropBlur: false,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Builder(
-                            builder: (context) {
-                              final c = CycleService.instance;
-                              final summary = c.fertilityDashboardSummary();
-                              final headline = summary.headline;
-                              final sub = summary.sub;
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    headline,
-                                    style: TextStyle(
-                                      color: scheme.onSurface,
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                  if (sub != null) ...[
-                                    const SizedBox(height: 6),
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => const AiForecastScreen(),
+                          ),
+                        );
+                      },
+                      borderRadius: BorderRadius.circular(20),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Builder(
+                              builder: (context) {
+                                final c = CycleService.instance;
+                                final summary = c.fertilityDashboardSummary();
+                                final headline = summary.headline;
+                                final sub = summary.sub;
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
                                     Text(
-                                      sub,
+                                      headline,
                                       style: TextStyle(
-                                        color: scheme.onSurfaceVariant,
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w500,
+                                        color: scheme.onSurface,
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.w700,
                                       ),
                                     ),
+                                    if (sub != null) ...[
+                                      const SizedBox(height: 6),
+                                      Text(
+                                        sub,
+                                        style: TextStyle(
+                                          color: scheme.onSurfaceVariant,
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
                                   ],
-                                ],
-                              );
-                            },
+                                );
+                              },
+                            ),
                           ),
-                        ),
-                        Icon(Icons.calendar_today, color: scheme.primary, size: 28),
-                      ],
+                          Icon(Icons.calendar_today, color: scheme.primary, size: 28),
+                          const SizedBox(width: 8),
+                          Icon(Icons.chevron_right_rounded, color: scheme.onSurfaceVariant),
+                        ],
+                      ),
                     ),
                   ),
                 ),

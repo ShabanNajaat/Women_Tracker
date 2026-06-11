@@ -267,7 +267,7 @@ class _PartnerStreakPanel extends StatelessWidget {
             )
           else if (!linked)
             Text(
-              'Link a partner to see each other\'s daily streak and nudge when someone hasn\'t checked in.',
+              'Start a streak with a friend to see each other\'s progress and stay motivated together.',
               style: TextStyle(color: scheme.onSurfaceVariant, fontSize: 13, height: 1.35),
             )
           else ...[
@@ -303,8 +303,8 @@ class _PartnerStreakPanel extends StatelessWidget {
               if (!linked && ApiService().isAuthenticated)
                 OutlinedButton.icon(
                   onPressed: onLinkPartner,
-                  icon: Icon(Icons.link_rounded, color: scheme.primary, size: 18),
-                  label: Text('Link partner', style: TextStyle(fontWeight: FontWeight.w700, color: scheme.primary)),
+                  icon: Icon(Icons.local_fire_department_rounded, color: scheme.primary, size: 18),
+                  label: Text('Start streak', style: TextStyle(fontWeight: FontWeight.w700, color: scheme.primary)),
                 ),
               if (linked && ApiService().isAuthenticated)
                 FilledButton.icon(
