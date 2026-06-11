@@ -89,6 +89,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   int _section = 0;
   bool _mobileDetail = false;
   final TextEditingController _profileNameCtrl = TextEditingController();
+  String? _profileUsername; // The Glow @username
   String? _profileEmail;
   int? _profileGlowPoints;
   String? _profilePhotoDataUrl;
@@ -171,12 +172,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
       try {
         final data = jsonDecode(res.body);
         if (data is Map) {
-          final name = data['name']?.toString() ?? '';
+          final rawName = data['name']?.toString() ?? '';
+          final username = data['username']?.toString() ?? '';
           final email = data['email']?.toString() ?? '';
           final photo = data['photo']?.toString();
           final points = data['glowPoints'];
+          // Use username as display name if name is missing or default
+          final isDefaultName = rawName.isEmpty || rawName == 'Glow member';
+          final displayName = isDefaultName ? username : rawName;
           setState(() {
-            _profileNameCtrl.text = name;
+            _profileUsername = username.isNotEmpty ? username : null;
+            _profileNameCtrl.text = displayName;
             _profileEmail = email.isNotEmpty ? email : null;
             _profileGlowPoints = points is int ? points : int.tryParse('$points');
             _profilePhotoDataUrl = photo != null && photo.isNotEmpty ? photo : null;
@@ -627,8 +633,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
           const LinearProgressIndicator()
         else ...[
           Center(child: _profileAvatar(scheme)),
+          if (_profileUsername != null) ...[
+            const SizedBox(height: 8),
+            Center(
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFF8FC8).withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: const Color(0xFFFF8FC8).withValues(alpha: 0.4)),
+                ),
+                child: Text(
+                  '@$_profileUsername',
+                  style: const TextStyle(
+                    color: Color(0xFFE0569A),
+                    fontWeight: FontWeight.w700,
+                    fontSize: 14,
+                    letterSpacing: 0.3,
+                  ),
+                ),
+              ),
+            ),
+          ],
           const SizedBox(height: 20),
           if (_profileEmail != null && _profileEmail!.isNotEmpty)
+
             _profileInfoCard(
               scheme,
               icon: Icons.mail_outline_rounded,

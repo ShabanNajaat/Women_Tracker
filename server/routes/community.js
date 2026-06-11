@@ -74,7 +74,7 @@ router.post('/posts', auth, async (req, res) => {
             return res.status(400).json({ msg: 'Title and body are required' });
         }
         const user = await db.findUserById(req.user.id);
-        const authorName = user?.name || 'Glow member';
+        const authorName = user?.username || user?.name || 'Glow member';
         let phaseRoom = req.body?.phaseRoom ? String(req.body.phaseRoom).trim() : null;
         if (phaseRoom && !PHASE_ROOMS.has(phaseRoom)) {
             return res.status(400).json({ msg: 'Invalid phase room' });
@@ -129,7 +129,7 @@ router.post('/posts/:id/comments', auth, async (req, res) => {
             return res.status(400).json({ msg: 'Comment body is required' });
         }
         const user = await db.findUserById(req.user.id);
-        const authorName = user?.name || 'Glow member';
+        const authorName = user?.username || user?.name || 'Glow member';
         const comment = await db.saveCommunityComment({
             postId: req.params.id,
             userId: req.user.id,
