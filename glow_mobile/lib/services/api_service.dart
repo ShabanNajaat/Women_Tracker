@@ -31,8 +31,8 @@ class ApiService {
       if (host == 'localhost' || host == '127.0.0.1') {
         return 'http://localhost:8081/api';
       }
-      // If hosted on Netlify, API lives on Render
-      if (host.contains('netlify.app')) {
+      // If hosted on Netlify or GitHub Pages, API lives on Render
+      if (host.contains('netlify.app') || host.contains('github.io')) {
         return 'https://women-tracker-1.onrender.com/api';
       }
       // Same host as API (e.g. Render serves build/web + /api together).
@@ -40,6 +40,7 @@ class ApiService {
     }
     return 'https://women-tracker-1.onrender.com/api';
   }
+
 
   String? _token;
 

@@ -113,14 +113,32 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // Middleware — production: set CORS_ORIGIN=https://your-app.netlify.app (comma-separated for several)
+const ALWAYS_ALLOWED = [
+    'https://shabannajaat.github.io',
+    'https://tubular-pixie-00c69b.netlify.app',
+    'https://precious-paprenjak-732a19.netlify.app',
+    'http://localhost:3000',
+    'http://localhost:8081',
+];
 const corsOrigins = process.env.CORS_ORIGIN
-    ? process.env.CORS_ORIGIN.split(',').map((s) => s.trim()).filter(Boolean)
-    : null;
+    ? [...ALWAYS_ALLOWED, ...process.env.CORS_ORIGIN.split(',').map((s) => s.trim()).filter(Boolean)]
+    : ALWAYS_ALLOWED;
 app.use(cors({
-    origin: corsOrigins && corsOrigins.length ? corsOrigins : true,
+    origin: (origin, callback) => {
+        // Allow requests with no origin (mobile apps, curl, Postman)
+        if (!origin) return callback(null, true);
+        if (corsOrigins.some(allowed => origin === allowed || origin.startsWith(allowed))) {
+            return callback(null, true);
+        }
+        // In development mode, allow everything
+        if (process.env.NODE_ENV !== 'production') return callback(null, true);
+        return callback(new Error(`CORS: origin ${origin} not allowed`));
+    },
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'x-auth-token', 'x-admin-key'],
+    credentials: true,
 }));
+
 app.use(express.json({ limit: '2mb' }));
 app.use('/uploads', express.static(uploadDir));
 
