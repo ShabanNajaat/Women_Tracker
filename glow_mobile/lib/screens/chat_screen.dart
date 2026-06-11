@@ -62,7 +62,7 @@ class _ChatScreenState extends State<ChatScreen> {
         return KeyEventResult.ignored;
       },
     );
-    if (!kIsWeb) _recorder = AudioRecorder();
+    _recorder = AudioRecorder();
     UserDataScope.sessionEpoch.addListener(_onUserSessionChanged);
     _bootstrap();
   }
@@ -255,14 +255,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Future<void> _toggleRecording() async {
-    if (kIsWeb || _recorder == null) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Voice notes are available on iOS/Android builds.')),
-        );
-      }
-      return;
-    }
+    if (_recorder == null) return;
     final r = _recorder!;
     if (_recording) {
       final path = await r.stop();
@@ -324,8 +317,11 @@ class _ChatScreenState extends State<ChatScreen> {
         );
         return;
       }
-      final dir = await getTemporaryDirectory();
-      final filePath = '${dir.path}/glow_voice_${DateTime.now().millisecondsSinceEpoch}.m4a';
+      String filePath = '';
+      if (!kIsWeb) {
+        final dir = await getTemporaryDirectory();
+        filePath = '${dir.path}/glow_voice_${DateTime.now().millisecondsSinceEpoch}.m4a';
+      }
       await r.start(
         const RecordConfig(encoder: AudioEncoder.aacLc),
         path: filePath,
@@ -433,11 +429,6 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
               ],
             ),
-          ),
-          IconButton(
-            tooltip: 'Post score & challenge summary to Community (and copy to clipboard)',
-            icon: Icon(Icons.ios_share_rounded, color: scheme.onSurface),
-            onPressed: _shareScoresWithCommunity,
           ),
         ],
       ),
@@ -553,28 +544,26 @@ class _ChatScreenState extends State<ChatScreen> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (!kIsWeb) ...[
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: Material(
-                  color: _recording ? scheme.error.withValues(alpha: 0.25) : scheme.surfaceContainerHigh,
-                  shape: const CircleBorder(),
-                  child: InkWell(
-                    customBorder: const CircleBorder(),
-                    onTap: _isTyping ? null : _toggleRecording,
-                    child: Padding(
-                      padding: const EdgeInsets.all(14),
-                      child: Icon(
-                        _recording ? Icons.stop_rounded : Icons.mic_rounded,
-                        color: _recording ? scheme.error : scheme.onSurface,
-                        size: 22,
-                      ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Material(
+                color: _recording ? scheme.error.withValues(alpha: 0.25) : scheme.surfaceContainerHigh,
+                shape: const CircleBorder(),
+                child: InkWell(
+                  customBorder: const CircleBorder(),
+                  onTap: _isTyping ? null : _toggleRecording,
+                  child: Padding(
+                    padding: const EdgeInsets.all(14),
+                    child: Icon(
+                      _recording ? Icons.stop_rounded : Icons.mic_rounded,
+                      color: _recording ? scheme.error : scheme.onSurface,
+                      size: 22,
                     ),
                   ),
                 ),
               ),
-              const SizedBox(width: 8),
-            ],
+            ),
+            const SizedBox(width: 8),
             Expanded(
               child: GlassCard(
                 useBackdropBlur: false,

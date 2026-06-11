@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
+const http = require('http');
+const { initSocket } = require('./socket');
 
 dotenv.config({ path: path.join(__dirname, '.env') });
 if (!process.env.JWT_SECRET) console.error('CRITICAL: JWT_SECRET missing from .env');
@@ -65,7 +67,11 @@ function mountWebApp() {
 function startHttpServer() {
     const host = process.env.HOST || '0.0.0.0';
     mountWebApp();
-    app.listen(PORT, host, () => {
+    
+    const server = http.createServer(app);
+    initSocket(server);
+    
+    server.listen(PORT, host, () => {
         const mode = mongoose.connection.readyState === 1 ? 'MongoDB' : 'in-memory fallback';
         console.log(`Server running on http://${host}:${PORT} (${mode})`);
     });

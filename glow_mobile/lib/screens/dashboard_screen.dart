@@ -79,7 +79,7 @@ class _DashboardScreenState extends State<DashboardScreen> with WidgetsBindingOb
                   children: [
                     Expanded(
                       child: GlowText(
-                        'Good Morning, Najaat 🌸',
+                        _timeGreeting(),
                         style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.w800,
@@ -179,31 +179,16 @@ class _DashboardScreenState extends State<DashboardScreen> with WidgetsBindingOb
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Row(
+                            Text('Reminders', style: TextStyle(color: scheme.onSurface, fontSize: 18, fontWeight: FontWeight.w800)),
+                            const SizedBox(height: 12),
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
                               children: [
-                                Icon(Icons.notifications_active, color: scheme.secondary),
-                                const SizedBox(width: 8),
-                                Text('🔔 Reminders', style: TextStyle(color: scheme.onSurface, fontSize: 18, fontWeight: FontWeight.w800)),
+                                _buildReminderChip(scheme, '📝', 'Log your symptoms', 0),
+                                _buildReminderChip(scheme, '🩸', 'Cycle starts in 3 days', 1),
+                                _buildReminderChip(scheme, '💖', 'Wellness check-in', 2),
                               ],
-                            ),
-                            const SizedBox(height: 8),
-                            ListTile(
-                              leading: Icon(Icons.check_circle_outline, color: scheme.primary),
-                              title: const Text('Time to log your symptoms', style: TextStyle(fontWeight: FontWeight.w600)),
-                              contentPadding: EdgeInsets.zero,
-                              dense: true,
-                            ),
-                            ListTile(
-                              leading: Icon(Icons.calendar_today, color: scheme.primary),
-                              title: const Text('Your cycle may start in 3 days', style: TextStyle(fontWeight: FontWeight.w600)),
-                              contentPadding: EdgeInsets.zero,
-                              dense: true,
-                            ),
-                            ListTile(
-                              leading: Icon(Icons.favorite_outline, color: scheme.primary),
-                              title: const Text('Your wellness check-in is ready', style: TextStyle(fontWeight: FontWeight.w600)),
-                              contentPadding: EdgeInsets.zero,
-                              dense: true,
                             ),
                           ],
                         ),
@@ -567,6 +552,60 @@ class _DashboardScreenState extends State<DashboardScreen> with WidgetsBindingOb
           ),
         );
       },
+    );
+  }
+
+  String _timeGreeting() {
+    final hour = DateTime.now().hour;
+    if (hour < 12) return 'Good Morning, Glowie 🌸';
+    if (hour < 17) return 'Good Afternoon, Glowie ☀️';
+    return 'Good Evening, Glowie 🌙';
+  }
+
+  Widget _buildReminderChip(ColorScheme scheme, String emoji, String label, int index) {
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0.0, end: 1.0),
+      duration: Duration(milliseconds: 400 + (index * 150)),
+      curve: Curves.elasticOut,
+      builder: (context, value, child) {
+        return Transform.scale(
+          scale: value,
+          child: child,
+        );
+      },
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(24),
+          onTap: () {},
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            decoration: BoxDecoration(
+              color: scheme.primaryContainer.withValues(alpha: 0.45),
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: scheme.primary.withValues(alpha: 0.2)),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(emoji, style: const TextStyle(fontSize: 18)),
+                const SizedBox(width: 8),
+                Flexible(
+                  child: Text(
+                    label,
+                    style: TextStyle(
+                      color: scheme.onSurface,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

@@ -105,13 +105,12 @@ class _LoginScreenState extends State<LoginScreen> {
     showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Your privacy'),
+        title: const Text('Your Privacy'),
         content: const Text(
-          'Health and wellness notes you add in Glow are meant to stay private—we do not sell your personal '
-          'wellness data.\n\n'
-          'In production, always use HTTPS between the app and your API. '
-          'We are not claiming extra “military-grade” encryption beyond what TLS and your host provide.\n\n'
-          'A full privacy policy will be published before a public launch.',
+          'Your health and wellness notes are yours alone. '
+          'We do not sell or share your personal data with anyone.\n\n'
+          'What you track in Glow stays private and secure. '
+          'Only you can see your information.',
         ),
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Close')),
@@ -129,13 +128,27 @@ class _LoginScreenState extends State<LoginScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('The Problem', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-            SizedBox(height: 8),
-            Text('Many women struggle to understand their cycle, symptoms, mood changes, and overall wellness.'),
+            Text(
+              'Your body goes through changes every day — your cycle, '
+              'your mood, your energy, your sleep. It can be hard to '
+              'keep track of it all.',
+              style: TextStyle(fontSize: 15, height: 1.5),
+            ),
             SizedBox(height: 16),
-            Text('The Solution', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-            SizedBox(height: 8),
-            Text('Glow Wellness uses AI and tracking tools to make personal health information easier to understand.'),
+            Text('Glow Wellness is your personal wellness companion. '
+              'It helps you:',
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, height: 1.5),
+            ),
+            SizedBox(height: 12),
+            Text('🌸  Track your cycle and symptoms', style: TextStyle(fontSize: 14, height: 1.6)),
+            Text('💬  Chat with Dr. Najaat, your AI wellness assistant', style: TextStyle(fontSize: 14, height: 1.6)),
+            Text('📊  Understand your body\'s patterns', style: TextStyle(fontSize: 14, height: 1.6)),
+            Text('📝  Keep a private wellness journal', style: TextStyle(fontSize: 14, height: 1.6)),
+            SizedBox(height: 16),
+            Text(
+              'Everything is simple, private, and made just for you.',
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, height: 1.5),
+            ),
           ],
         ),
         actions: [
