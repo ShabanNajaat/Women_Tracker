@@ -11,6 +11,7 @@ function jsonUser(doc) {
     if (!doc) return null;
     const o = typeof doc.toObject === 'function' ? doc.toObject() : { ...doc };
     const id = o.id || o._id?.toString?.() || o._id;
+    return {
         id: String(id),
         username: o.username,
         name: o.name,
@@ -484,37 +485,59 @@ router.post('/set-username', auth, async (req, res) => {
     let { username } = req.body;
     try {
         if (!username) return sendError(res, 400, { code: 'validation', message: 'Username is required' });
-        
+
         username = username.toString().trim().toLowerCase();
-        
+
         if (username.includes(' ')) {
             return sendError(res, 400, { code: 'validation', message: 'Username cannot contain spaces' });
         }
-        
+
         if (username.length < 3) {
             return sendError(res, 400, { code: 'validation', message: 'Username must be at least 3 characters' });
         }
 
+        // Check if username is already taken by someone else
         const existing = await db.findUserByQuery({ username });
         if (existing) {
-            if (existing.id === req.user.id) {
+            const existingId = (existing.id || existing._id)?.toString();
+            if (existingId === req.user.id) {
+                // User already has this username — success
                 return res.json({ success: true, user: jsonUser(existing) });
             }
-            return sendError(res, 400, { code: 'username_taken', message: 'This username is already taken' });
+            return sendError(res, 400, { code: 'username_taken', message: 'This username is already taken. Please choose another.' });
         }
 
-        const user = await db.findUserById(req.user.id);
-        if (!user) return sendError(res, 404, { code: 'not_found', message: 'User not found' });
+        let updatedUser;
+        if (db.isConnected()) {
+            // MongoDB is connected — use direct $set to avoid saveUser issues
+            const mongoose = require('mongoose');
+            const User = require('../models/User');
+            if (!mongoose.Types.ObjectId.isValid(req.user.id)) {
+                return sendError(res, 400, { code: 'invalid_id', message: 'Invalid user ID in token. Please sign out and sign in again.' });
+            }
+            updatedUser = await User.findByIdAndUpdate(
+                req.user.id,
+                { $set: { username } },
+                { new: true }
+            );
+        } else {
+            // Memory fallback
+            const user = await db.findUserById(req.user.id);
+            if (!user) return sendError(res, 404, { code: 'not_found', message: 'User not found' });
+            user.username = username;
+            updatedUser = await db.saveUser(user);
+        }
 
-        user.username = username;
-        await db.saveUser(user);
-        
-        res.json({ success: true, user: jsonUser(user) });
+        if (!updatedUser) {
+            return sendError(res, 404, { code: 'not_found', message: 'User not found. Please sign out and sign in again.' });
+        }
+
+        res.json({ success: true, user: jsonUser(updatedUser) });
     } catch (err) {
-        console.error(err.message);
+        console.error('[set-username] Error:', err.message);
         sendError(res, 500, {
             code: 'server_error',
-            message: 'Server error',
+            message: 'Could not save username: ' + err.message,
             devDetail: err.message,
         });
     }
