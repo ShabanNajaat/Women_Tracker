@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
-import '../widgets/home_scaffold.dart';
+import 'privacy_consent_screen.dart';
 
 class CreateUsernameScreen extends StatefulWidget {
   const CreateUsernameScreen({super.key});
@@ -38,19 +38,31 @@ class _CreateUsernameScreenState extends State<CreateUsernameScreen> {
     });
 
     try {
-      final res = await ApiService().post('/auth/set-username', body: {'username': username});
+      // Re-init to make sure the auth token is loaded into memory
+      final api = ApiService();
+      await api.init();
+      if (!api.isAuthenticated) {
+        setState(() => _error = 'Not signed in. Please restart the app and log in again.');
+        return;
+      }
+      final res = await api.post('/auth/set-username', body: {'username': username});
       if (res.statusCode == 200) {
         if (!mounted) return;
+        // After picking a username, show the Privacy consent screen
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => const HomeScaffold()),
+          MaterialPageRoute(builder: (_) => const PrivacyConsentScreen()),
         );
       } else {
-        final body = jsonDecode(res.body);
-        setState(() => _error = body['message'] ?? 'Could not set username');
+        String errMsg = 'Could not set username';
+        try {
+          final body = jsonDecode(res.body);
+          errMsg = body['message'] ?? errMsg;
+        } catch (_) {}
+        setState(() => _error = errMsg);
       }
     } catch (e) {
-      setState(() => _error = 'Network error. Please try again.');
+      setState(() => _error = 'Could not reach server. Check your connection and try again. ($e)');
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -74,10 +86,14 @@ class _CreateUsernameScreenState extends State<CreateUsernameScreen> {
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 12),
-              const Text(
+              Text(
                 'Pick a unique username so your friends can find you. '
                 'This will be your identity in the Glow community.',
-                style: TextStyle(fontSize: 15, color: Colors.white70, height: 1.5),
+                style: TextStyle(
+                  fontSize: 15,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  height: 1.5,
+                ),
               ),
               const SizedBox(height: 32),
               TextField(

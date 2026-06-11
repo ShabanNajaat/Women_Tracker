@@ -28,12 +28,12 @@ class _SplashScreenState extends State<SplashScreen> {
     final privacyAccepted = prefs.getBool('privacy_accepted') ?? false;
 
     await ApiService().init();
-    var goHome = ApiService().isAuthenticated;
+    var isLoggedIn = ApiService().isAuthenticated;
     bool hasUsername = false;
 
-    if (goHome) {
-      goHome = await ApiService().validateToken();
-      if (goHome) {
+    if (isLoggedIn) {
+      isLoggedIn = await ApiService().validateToken();
+      if (isLoggedIn) {
         final res = await ApiService().get('/auth/profile');
         if (res.statusCode == 200) {
           try {
@@ -48,13 +48,18 @@ class _SplashScreenState extends State<SplashScreen> {
     if (!mounted) return;
 
     Widget next;
-    if (!privacyAccepted) {
-      next = const PrivacyConsentScreen();
-    } else if (!goHome) {
+    // New flow order: Login → Username → Privacy → Dashboard
+    if (!isLoggedIn) {
+      // Not logged in — go to login
       next = const LoginScreen();
     } else if (!hasUsername) {
+      // Logged in but no username yet — pick one
       next = const CreateUsernameScreen();
+    } else if (!privacyAccepted) {
+      // Logged in + has username but hasn't accepted privacy yet — show consent
+      next = const PrivacyConsentScreen();
     } else {
+      // All good — go to dashboard
       next = const HomeScaffold();
     }
 
