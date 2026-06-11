@@ -152,5 +152,6 @@ app.use('/api/community', require('./routes/community'));
 app.use('/api/ama', require('./routes/ama'));
 app.use('/api/forecast', require('./routes/forecast'));
 app.use('/api/friends', require('./routes/friends'));
+app.use('/api/admin', require('./routes/admin'));
 
 const PORT = Number(process.env.PORT) || 8081;
