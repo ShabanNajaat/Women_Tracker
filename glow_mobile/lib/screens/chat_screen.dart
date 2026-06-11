@@ -270,7 +270,7 @@ class _ChatScreenState extends State<ChatScreen> {
           '/chat/transcribe',
           fieldName: 'audio',
           bytes: bytes,
-          filename: 'voice.m4a',
+          filename: kIsWeb ? 'voice.webm' : 'voice.m4a',
         );
         if (!mounted) return;
         setState(() => _isTyping = false);
@@ -297,9 +297,7 @@ class _ChatScreenState extends State<ChatScreen> {
           );
           return;
         }
-        await _sendUserText(
-          'Here is what I said in my voice note — please respond with wellness ideas that fit: $text',
-        );
+        await _sendUserText(text);
       } catch (_) {
         if (mounted) {
           setState(() => _isTyping = false);

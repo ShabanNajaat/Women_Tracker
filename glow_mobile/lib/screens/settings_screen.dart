@@ -25,6 +25,8 @@ import 'login_screen.dart';
 import 'app_guide_screen.dart';
 import 'exercise_timer_screen.dart';
 import '../services/glow_web_links.dart';
+import 'admin_dashboard_screen.dart';
+import '../widgets/rate_app_dialog.dart';
 
 class _NavItem {
   const _NavItem({
@@ -963,6 +965,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
           },
           icon: const Icon(Icons.timer_outlined),
           label: const Text('Exercise timer'),
+          style: OutlinedButton.styleFrom(
+            minimumSize: const Size(double.infinity, 48),
+            alignment: Alignment.centerLeft,
+          ),
+        ),
+        const SizedBox(height: 10),
+        OutlinedButton.icon(
+          onPressed: () {
+            showDialog<void>(
+              context: context,
+              builder: (ctx) => const RateAppDialog(),
+            );
+          },
+          icon: const Icon(Icons.star_rate_rounded),
+          label: const Text('Rate Glow Wellness'),
           style: OutlinedButton.styleFrom(
             minimumSize: const Size(double.infinity, 48),
             alignment: Alignment.centerLeft,

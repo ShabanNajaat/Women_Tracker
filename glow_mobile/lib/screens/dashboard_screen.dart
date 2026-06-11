@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons/lucide_icons.dart';
+import '../services/socket_service.dart';
 import '../widgets/animated_glass_card.dart';
 import '../widgets/glass_card.dart';
 import '../widgets/dashboard_hero.dart';
@@ -12,6 +14,7 @@ import '../services/cycle_service.dart';
 import '../widgets/thirty_day_challenge_card.dart';
 import '../widgets/wellness_insights_carousel.dart';
 import '../widgets/beginner_tools_row.dart';
+import 'friends_screen.dart';
 import 'ai_forecast_screen.dart';
 import 'health_insights_screen.dart';
 import 'personalization_hub_screen.dart';
@@ -19,6 +22,7 @@ import 'settings_screen.dart';
 import 'wellness_schedules_hub_screen.dart';
 import '../models/wellness_schedule_type.dart';
 import '../services/wellness_schedule_service.dart';
+import '../services/health_log_service.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -38,6 +42,7 @@ class _DashboardScreenState extends State<DashboardScreen> with WidgetsBindingOb
     _contentEpoch = DateTime.now().millisecondsSinceEpoch;
     CycleService.instance.ensureLoaded();
     WellnessScheduleService.instance.ensureLoaded();
+    SocketService.instance.connect();
     ChallengeService.instance.ensureLoaded().then((_) {
       if (mounted) setState(() {});
     });
@@ -89,6 +94,15 @@ class _DashboardScreenState extends State<DashboardScreen> with WidgetsBindingOb
                       ),
                     ),
                     IconButton(
+                      tooltip: 'Friends & Community',
+                      icon: Icon(LucideIcons.users, color: scheme.onSurface),
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(builder: (_) => const FriendsScreen()),
+                        );
+                      },
+                    ),
+                    IconButton(
                       tooltip: 'Settings',
                       icon: Icon(Icons.settings_outlined, color: scheme.onSurface),
                       onPressed: () {
@@ -115,63 +129,89 @@ class _DashboardScreenState extends State<DashboardScreen> with WidgetsBindingOb
                     index: 0,
                     child: GlassCard(
                       useBackdropBlur: false,
-                      child: Padding(
-                        padding: const EdgeInsets.all(18.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Today\'s Wellness Score', style: TextStyle(color: scheme.onSurfaceVariant, fontSize: 14, fontWeight: FontWeight.w600)),
-                            const SizedBox(height: 8),
-                            Row(
+                        child: Padding(
+                          padding: const EdgeInsets.all(18.0),
+                          child: Builder(builder: (context) {
+                            final log = HealthLogService.instance.logForDate(DateTime.now());
+                            final score = HealthLogService.instance.weeklyGlowScore(days: 1);
+                            final hasMood = log.mood > 0;
+                            final hasEnergy = log.energy > 0;
+                            final hasSleep = log.sleepHours > 0;
+                            final hasWater = log.waterGlasses > 0;
+                            final hasSymptoms = log.symptoms.isNotEmpty;
+                            final hasAnyData = hasMood || hasEnergy || hasSleep || hasWater;
+
+                            // Build dynamic insights
+                            final insights = <String>[];
+                            if (!hasMood) insights.add('• Log your mood to personalise your score');
+                            if (!hasSleep) insights.add('• Add tonight\'s sleep to track rest patterns');
+                            if (!hasWater) insights.add('• Log water intake to stay on top of hydration');
+                            if (hasSleep && log.sleepHours < 6) insights.add('• You slept less than 6h — try an earlier bedtime tonight');
+                            if (hasSleep && log.sleepHours >= 8) insights.add('• Great sleep last night! Your body is recovering well 🌙');
+                            if (hasWater && log.waterGlasses < 4) insights.add('• Drink more water today — aim for 8 glasses');
+                            if (hasWater && log.waterGlasses >= 8) insights.add('• Excellent hydration today! 💧');
+                            if (hasMood && log.mood <= 2) insights.add('• Your mood is low — be gentle with yourself today 💕');
+                            if (hasEnergy && log.energy <= 2) insights.add('• Energy is low — rest and nourishing food can help');
+                            if (hasSymptoms) insights.add('• Symptoms logged: ${log.symptoms.take(3).join(", ")}');
+                            if (insights.isEmpty) insights.add('• Everything looks great today! Keep glowing ✨');
+
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('85', style: TextStyle(color: scheme.primary, fontSize: 40, fontWeight: FontWeight.w800)),
-                                Text('/100', style: TextStyle(color: scheme.onSurfaceVariant, fontSize: 18, fontWeight: FontWeight.w600)),
+                                Text('Today\'s Wellness Score', style: TextStyle(color: scheme.onSurfaceVariant, fontSize: 14, fontWeight: FontWeight.w600)),
+                                const SizedBox(height: 8),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    if (score != null) ...[
+                                      Text('$score', style: TextStyle(color: scheme.primary, fontSize: 44, fontWeight: FontWeight.w800)),
+                                      Text('/100', style: TextStyle(color: scheme.onSurfaceVariant, fontSize: 18, fontWeight: FontWeight.w600)),
+                                    ] else ...[
+                                      Text('–', style: TextStyle(color: scheme.onSurfaceVariant, fontSize: 44, fontWeight: FontWeight.w800)),
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                        child: Text(
+                                          'Log today\'s mood, sleep & water to see your score',
+                                          style: TextStyle(color: scheme.onSurfaceVariant, fontSize: 12),
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                                if (hasAnyData) ...[
+                                  const SizedBox(height: 14),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      if (hasMood)
+                                        Text('😊 Mood: ${log.moodLabel ?? '${log.mood}/5'}',
+                                            style: TextStyle(color: scheme.onSurface, fontWeight: FontWeight.w600, fontSize: 13)),
+                                      if (hasWater)
+                                        Text('💧 ${log.waterGlasses} glasses',
+                                            style: TextStyle(color: scheme.onSurface, fontWeight: FontWeight.w600, fontSize: 13)),
+                                    ],
+                                  ),
+                                  if (hasSleep) ...[
+                                    const SizedBox(height: 6),
+                                    Text('😴 Sleep: ${log.sleepHours.toStringAsFixed(1)}h',
+                                        style: TextStyle(color: scheme.onSurface, fontWeight: FontWeight.w600, fontSize: 13)),
+                                  ],
+                                ],
+                                const SizedBox(height: 16),
+                                Text('Today\'s Insights', style: TextStyle(color: scheme.onSurface, fontSize: 15, fontWeight: FontWeight.w700)),
+                                const SizedBox(height: 8),
+                                Text('Based on your cycle and today\'s logs:', style: TextStyle(color: scheme.onSurfaceVariant, fontSize: 13, fontWeight: FontWeight.w500)),
+                                const SizedBox(height: 8),
+                                Text(insights.join('\n'), style: TextStyle(color: scheme.onSurface, height: 1.7, fontWeight: FontWeight.w500, fontSize: 13)),
                               ],
-                            ),
-                            const SizedBox(height: 16),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text('😊 Mood: Good', style: TextStyle(color: scheme.onSurface, fontWeight: FontWeight.w600)),
-                                Text('💧 Hydration: Normal', style: TextStyle(color: scheme.onSurface, fontWeight: FontWeight.w600)),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            Text('😴 Sleep: 7h', style: TextStyle(color: scheme.onSurface, fontWeight: FontWeight.w600)),
-                          ],
+                            );
+                          }),
                         ),
-                      ),
                     ),
                   ),
                   const SizedBox(height: 16),
                   AnimatedGlassCard(
                     index: 1,
-                    child: GlassCard(
-                      useBackdropBlur: false,
-                      child: Padding(
-                        padding: const EdgeInsets.all(18.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Icon(Icons.auto_awesome, color: scheme.tertiary),
-                                const SizedBox(width: 8),
-                                Text('Today\'s Insights', style: TextStyle(color: scheme.onSurface, fontSize: 18, fontWeight: FontWeight.w800)),
-                              ],
-                            ),
-                            const SizedBox(height: 12),
-                            Text('Based on your cycle and symptoms:', style: TextStyle(color: scheme.onSurfaceVariant, fontWeight: FontWeight.w500)),
-                            const SizedBox(height: 12),
-                            Text('• Consider light exercise today\n• Drink more water\n• Track your mood changes', style: TextStyle(color: scheme.onSurface, height: 1.6, fontWeight: FontWeight.w600)),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  AnimatedGlassCard(
-                    index: 2,
                     child: GlassCard(
                       useBackdropBlur: false,
                       child: Padding(

@@ -272,12 +272,24 @@ router.post('/transcribe', auth, audioUpload.single('audio'), async (req, res) =
     if (!openai) {
         return res.status(503).json({
             error: 'no_openai',
-            message: 'Voice notes need OPENAI_API_KEY on the server (Whisper transcription).',
+            message: 'Voice transcription needs an OPENAI_API_KEY configured on the server. Please type your message instead.',
         });
     }
     try {
-        const name = (req.file.originalname && String(req.file.originalname)) || 'voice.m4a';
-        const file = await toFile(req.file.buffer, name);
+        // Detect the correct mime type and filename.
+        // On web, Flutter records webm/opus but may send filename as voice.m4a.
+        // Whisper supports: flac, m4a, mp3, mp4, mpeg, mpga, oga, ogg, wav, webm
+        const mimeType = req.file.mimetype || 'audio/webm';
+        let name = (req.file.originalname && String(req.file.originalname)) || 'voice.webm';
+
+        // If the mime type is webm but filename says m4a, fix the extension
+        if (mimeType.includes('webm') && !name.endsWith('.webm')) {
+            name = name.replace(/\.\w+$/, '.webm') || 'voice.webm';
+        } else if (mimeType.includes('ogg') && !name.endsWith('.ogg') && !name.endsWith('.oga')) {
+            name = name.replace(/\.\w+$/, '.ogg') || 'voice.ogg';
+        }
+
+        const file = await toFile(req.file.buffer, name, { type: mimeType });
         const tr = await openai.audio.transcriptions.create({
             file,
             model: process.env.OPENAI_TRANSCRIBE_MODEL || 'whisper-1',
@@ -288,7 +300,7 @@ router.post('/transcribe', auth, audioUpload.single('audio'), async (req, res) =
         console.error('[Dr. Najaat] Transcribe error:', err?.message || err);
         res.status(500).json({
             error: 'transcribe_failed',
-            message: 'Could not transcribe that recording. Try again or type your message.',
+            message: 'Could not transcribe that clip. Please try speaking more clearly or type your message.',
         });
     }
 });

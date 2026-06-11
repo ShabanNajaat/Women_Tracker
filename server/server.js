@@ -55,9 +55,16 @@ function scheduleMongoRetries() {
 function mountWebApp() {
     const webDir = path.join(__dirname, 'public');
     const indexHtml = path.join(webDir, 'index.html');
-    if (!fs.existsSync(indexHtml)) return false;
+    const adminHtml = path.join(webDir, 'admin.html');
+    // Serve static files (css, js, icons etc.)
     app.use(express.static(webDir, { maxAge: process.env.NODE_ENV === 'production' ? '1h' : 0 }));
-    app.get(/^(?!\/api\/|\/uploads\/).*/, (req, res) => {
+    // Explicit admin page route – must come BEFORE the catch-all
+    if (fs.existsSync(adminHtml)) {
+        app.get('/admin', (req, res) => res.sendFile(adminHtml));
+        console.log('Admin dashboard available at /admin');
+    }
+    if (!fs.existsSync(indexHtml)) return false;
+    app.get(/^(?!\/api\/|\/uploads\/|\/admin).*/, (req, res) => {
         res.sendFile(indexHtml);
     });
     console.log(`Serving Flutter web from ${webDir}`);

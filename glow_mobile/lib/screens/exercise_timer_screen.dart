@@ -118,7 +118,7 @@ class _ExerciseTimerScreenState extends State<ExerciseTimerScreen> {
       await _player.setReleaseMode(ReleaseMode.release);
       await _player.play(
         UrlSource(
-          'https://actions.google.com/sounds/v1/alarms/beep_short.ogg',
+          'https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg',
         ),
       );
     } catch (_) {
@@ -128,6 +128,9 @@ class _ExerciseTimerScreenState extends State<ExerciseTimerScreen> {
     }
     if (!kIsWeb) {
       Future<void>.delayed(const Duration(milliseconds: 350), () {
+        SystemSound.play(SystemSoundType.alert);
+      });
+      Future<void>.delayed(const Duration(milliseconds: 700), () {
         SystemSound.play(SystemSoundType.alert);
       });
     }
