@@ -19,6 +19,7 @@ import 'services/wearable_health_service.dart';
 import 'services/theme_service.dart';
 import 'services/wellness_score_service.dart';
 import 'screens/splash_screen.dart';
+import 'screens/admin_dashboard_screen.dart';
 import 'theme/glow_app_theme.dart';
 
 Future<void> main() async {
@@ -80,7 +81,11 @@ class GlowApp extends StatelessWidget {
           theme: GlowAppTheme.light(),
           darkTheme: GlowAppTheme.dark(),
           themeMode: mode,
-          home: const SplashScreen(),
+          initialRoute: '/',
+          routes: {
+            '/': (context) => const SplashScreen(),
+            '/admin': (context) => const AdminDashboardScreen(),
+          },
         );
       },
     );

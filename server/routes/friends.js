@@ -26,9 +26,10 @@ router.get('/suggested', auth, async (req, res) => {
       $or: [{ requester: req.user.id }, { recipient: req.user.id }]
     });
 
-    const friendIds = friendships.map(f => 
-      f.requester.toString() === req.user.id ? f.recipient.toString() : f.requester.toString()
-    );
+    const friendIds = friendships.map(f => {
+      if (!f.requester || !f.recipient) return null;
+      return f.requester.toString() === req.user.id ? f.recipient.toString() : f.requester.toString();
+    }).filter(Boolean);
     friendIds.push(req.user.id);
 
     const suggested = await User.find({
@@ -54,6 +55,7 @@ router.get('/', auth, async (req, res) => {
     const friends = [];
 
     friendships.forEach(f => {
+      if (!f.requester || !f.recipient) return; // Skip if user was deleted
       const isRequester = f.requester._id.toString() === req.user.id;
       const otherUser = isRequester ? f.recipient : f.requester;
 

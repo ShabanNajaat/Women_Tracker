@@ -1,8 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
-import '../models/user.dart';
-import 'main_screen.dart';
+import '../widgets/home_scaffold.dart';
 
 class CreateUsernameScreen extends StatefulWidget {
   const CreateUsernameScreen({super.key});
@@ -44,7 +43,7 @@ class _CreateUsernameScreenState extends State<CreateUsernameScreen> {
         if (!mounted) return;
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => const MainScreen()),
+          MaterialPageRoute(builder: (_) => const HomeScaffold()),
         );
       } else {
         final body = jsonDecode(res.body);

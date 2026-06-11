@@ -161,7 +161,13 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       itemCount: ratings.length,
       itemBuilder: (context, index) {
         final r = ratings[index];
-        final u = r['user'] != null ? r['user']['username'] : 'Unknown User';
+        final userObj = r['user'];
+        String u = 'Unknown User';
+        if (userObj is Map) {
+          u = userObj['username']?.toString() ?? userObj['name']?.toString() ?? userObj['email']?.toString() ?? 'Unknown User';
+        } else if (userObj is String && userObj.isNotEmpty) {
+          u = userObj;
+        }
         return Card(
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: ListTile(
