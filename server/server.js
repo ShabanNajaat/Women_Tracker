@@ -320,8 +320,6 @@ document.addEventListener('DOMContentLoaded',()=>{
 </html>`);
 });
 
-const PORT = Number(process.env.PORT) || 8081;
-
 app.post('/api/tracking/upload-voice', upload.single('audio'), (req, res) => {
     if (!req.file) return res.status(400).json({ msg: 'No file uploaded' });
     res.json({ filePath: `/uploads/${req.file.filename}` });
