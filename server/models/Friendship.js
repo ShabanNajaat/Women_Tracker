@@ -18,12 +18,11 @@ const friendshipSchema = new mongoose.Schema({
   },
 }, { timestamps: true });
 
-// Ensure a user cannot friend themselves
-friendshipSchema.pre('save', function(next) {
+// Ensure a user cannot friend themselves (async hook - no next() needed)
+friendshipSchema.pre('save', async function() {
   if (this.requester.equals(this.recipient)) {
-    return next(new Error('You cannot send a friend request to yourself.'));
+    throw new Error('You cannot send a friend request to yourself.');
   }
-  next();
 });
 
 // Ensure only one friendship doc exists between two users

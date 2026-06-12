@@ -7,21 +7,25 @@ const Friendship = require('../models/Friendship');
 // POST / — Create story
 router.post('/', auth, async (req, res) => {
     try {
-        const { imageData, caption } = req.body;
-        if (!imageData) return res.status(400).json({ error: 'imageData is required' });
+        const { imageData, caption, textOnly } = req.body;
+        if (!imageData && !textOnly) return res.status(400).json({ error: 'imageData or textOnly is required' });
+        if (!caption && !imageData) return res.status(400).json({ error: 'caption is required for text stories' });
 
         const story = new Story({
             user: req.user.id,
-            imageData,
+            imageData: imageData || null,
             caption: caption || '',
+            textOnly: !!textOnly,
             expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
         });
         await story.save();
         res.status(201).json(story);
     } catch (err) {
+        console.error('[stories] create error:', err.message);
         res.status(500).json({ error: 'Could not create story' });
     }
 });
+
 
 // GET /feed — Get friends' stories from last 24h
 router.get('/feed', auth, async (req, res) => {

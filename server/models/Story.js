@@ -2,8 +2,9 @@ const mongoose = require('mongoose');
 
 const storySchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  imageData: { type: String, required: true },
+  imageData: { type: String, default: null },
   caption: { type: String, default: '' },
+  textOnly: { type: Boolean, default: false },
   reactions: [{
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     emoji: { type: String, default: '❤️' },

@@ -86,6 +86,23 @@ class StoryService {
     }
   }
 
+  Future<String?> createTextStory(String text) async {
+    try {
+      final res = await ApiService().post('/stories', body: {
+        'caption': text,
+        'textOnly': true,
+      });
+      if (res.statusCode == 200 || res.statusCode == 201) {
+        await refreshFeed();
+        return null;
+      }
+      final data = jsonDecode(res.body);
+      return data['error']?.toString() ?? 'Could not post story';
+    } catch (e) {
+      return 'Network error: $e';
+    }
+  }
+
   Future<void> reactToStory(String storyId, String emoji) async {
     try {
       await ApiService().post('/stories/$storyId/react', body: {'emoji': emoji});
