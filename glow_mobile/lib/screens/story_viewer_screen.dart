@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
@@ -119,12 +121,21 @@ class _StoryViewerScreenState extends State<StoryViewerScreen>
   @override
   Widget build(BuildContext context) {
     final story = widget.stories[_currentIndex];
-    final imageUrl = story['imageUrl']?.toString() ?? '';
+    final imageData = story['imageData']?.toString() ?? '';
     final caption = story['caption']?.toString() ?? '';
     final createdAt = story['createdAt']?.toString();
     final initial = widget.username.isNotEmpty
         ? widget.username[0].toUpperCase()
         : '?';
+
+    // Decode base64 image data
+    Uint8List? imageBytes;
+    if (imageData.isNotEmpty && imageData.startsWith('data:image')) {
+      try {
+        final base64Str = imageData.split(',').last;
+        imageBytes = base64Decode(base64Str);
+      } catch (_) {}
+    }
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -142,9 +153,9 @@ class _StoryViewerScreenState extends State<StoryViewerScreen>
           fit: StackFit.expand,
           children: [
             // Story image
-            if (imageUrl.isNotEmpty)
-              Image.network(
-                imageUrl,
+            if (imageBytes != null)
+              Image.memory(
+                imageBytes,
                 fit: BoxFit.cover,
                 width: double.infinity,
                 height: double.infinity,
@@ -167,6 +178,23 @@ class _StoryViewerScreenState extends State<StoryViewerScreen>
                     ],
                   ),
                 ),
+                child: caption.isNotEmpty
+                    ? Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(32),
+                          child: Text(
+                            caption,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
+                              height: 1.5,
+                            ),
+                          ),
+                        ),
+                      )
+                    : null,
               ),
 
             // Gradient overlay for text readability
