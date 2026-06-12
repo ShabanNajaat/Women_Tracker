@@ -95,6 +95,10 @@ class _CameraScreenState extends State<CameraScreen> {
   void initState() {
     super.initState();
     _loadFriends();
+    // Auto-open camera immediately when tab is tapped
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _takePhoto();
+    });
   }
 
   @override
@@ -151,24 +155,156 @@ class _CameraScreenState extends State<CameraScreen> {
   }
 
   Future<void> _sendAsStreak() async {
-    if (_base64Image == null) return;
-    setState(() => _isSending = true);
-    final error = await StoryService.instance.createStory(
-      _base64Image!,
-      _captionController.text.trim().isEmpty ? '🔥 Streak!' : _captionController.text.trim(),
-    );
-    if (!mounted) return;
-    setState(() => _isSending = false);
-    if (error == null) {
+    if (_base64Image == null && _captionController.text.trim().isEmpty) return;
+    if (_friends.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('🔥 Streak sent!'), backgroundColor: _pink, behavior: SnackBarBehavior.floating),
+        const SnackBar(content: Text('Add friends first to send streaks! 💕'), backgroundColor: _pink),
       );
-      setState(() { _imageBytes = null; _base64Image = null; _captionController.clear(); });
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(error), backgroundColor: Colors.red[400]),
-      );
+      return;
     }
+    // Show friend selector bottom sheet
+    _showFriendSelectorSheet(
+      imageData: _base64Image,
+      caption: _captionController.text.trim().isEmpty ? '🔥 Streak!' : _captionController.text.trim(),
+    );
+  }
+
+  void _showFriendSelectorSheet({String? imageData, required String caption}) {
+    final selectedIds = <String>{};
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      isScrollControlled: true,
+      builder: (ctx) {
+        return StatefulBuilder(builder: (ctx, setSheetState) {
+          return Padding(
+            padding: EdgeInsets.only(
+              left: 24, right: 24, top: 24,
+              bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(width: 40, height: 4, decoration: BoxDecoration(borderRadius: BorderRadius.circular(2), color: Colors.grey.shade300)),
+                const SizedBox(height: 16),
+                const Text('Send streak to... 🔥', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18)),
+                const SizedBox(height: 4),
+                Text('Select friends to send your streak to', style: TextStyle(color: Theme.of(ctx).colorScheme.onSurfaceVariant, fontSize: 13)),
+                const SizedBox(height: 16),
+                // Friends grid
+                SizedBox(
+                  height: 90,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: _friends.length,
+                    separatorBuilder: (_, __) => const SizedBox(width: 12),
+                    itemBuilder: (_, i) {
+                      final friend = _friends[i];
+                      final name = friend['username']?.toString() ?? 'Friend';
+                      final fId = friend['_id']?.toString() ?? '';
+                      final initial = name.isNotEmpty ? name[0].toUpperCase() : '?';
+                      final isSelected = selectedIds.contains(fId);
+                      return GestureDetector(
+                        onTap: () => setSheetState(() {
+                          if (isSelected) { selectedIds.remove(fId); } else { selectedIds.add(fId); }
+                        }),
+                        child: Column(children: [
+                          Stack(children: [
+                            Container(
+                              width: 54, height: 54,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                gradient: isSelected ? const LinearGradient(colors: [_pink, _darkPink]) : null,
+                                color: isSelected ? null : Theme.of(ctx).colorScheme.surfaceContainerHighest,
+                                border: isSelected ? Border.all(color: _pink, width: 3) : Border.all(color: Theme.of(ctx).colorScheme.outline.withValues(alpha: 0.2)),
+                              ),
+                              child: Center(child: Text(initial, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20, color: isSelected ? Colors.white : Theme.of(ctx).colorScheme.onSurface))),
+                            ),
+                            if (isSelected)
+                              Positioned(right: 0, bottom: 0, child: Container(
+                                width: 20, height: 20,
+                                decoration: const BoxDecoration(shape: BoxShape.circle, color: _pink),
+                                child: const Icon(Icons.check, color: Colors.white, size: 14),
+                              )),
+                          ]),
+                          const SizedBox(height: 4),
+                          Text(name.length > 8 ? '${name.substring(0, 8)}..' : name,
+                            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: isSelected ? _pink : Theme.of(ctx).colorScheme.onSurfaceVariant)),
+                        ]),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 16),
+                // Select all button
+                Row(children: [
+                  TextButton.icon(
+                    onPressed: () => setSheetState(() {
+                      if (selectedIds.length == _friends.length) {
+                        selectedIds.clear();
+                      } else {
+                        for (final f in _friends) { selectedIds.add(f['_id']?.toString() ?? ''); }
+                      }
+                    }),
+                    icon: Icon(selectedIds.length == _friends.length ? Icons.deselect : Icons.select_all, size: 18),
+                    label: Text(selectedIds.length == _friends.length ? 'Deselect all' : 'Select all'),
+                    style: TextButton.styleFrom(foregroundColor: _pink),
+                  ),
+                  const Spacer(),
+                  Text('${selectedIds.length} selected', style: TextStyle(color: Theme.of(ctx).colorScheme.onSurfaceVariant, fontSize: 13)),
+                ]),
+                const SizedBox(height: 12),
+                // Send button
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton.icon(
+                    onPressed: selectedIds.isEmpty ? null : () {
+                      Navigator.pop(ctx);
+                      _sendStreakToFriends(selectedIds.toList(), imageData: imageData, caption: caption);
+                    },
+                    style: FilledButton.styleFrom(
+                      backgroundColor: _pink, foregroundColor: Colors.white,
+                      disabledBackgroundColor: _pink.withValues(alpha: 0.3),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    ),
+                    icon: const Icon(LucideIcons.send, size: 18),
+                    label: Text('Send Streak 🔥 (${selectedIds.length})', style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
+                  ),
+                ),
+                const SizedBox(height: 8),
+              ],
+            ),
+          );
+        });
+      },
+    );
+  }
+
+  Future<void> _sendStreakToFriends(List<String> friendIds, {String? imageData, required String caption}) async {
+    setState(() => _isSending = true);
+    int sent = 0;
+    for (final fId in friendIds) {
+      try {
+        final body = <String, dynamic>{'friendId': fId, 'caption': caption};
+        if (imageData != null) body['imageData'] = imageData;
+        final res = await ApiService().post('/streaks/send', body: body);
+        if (res.statusCode == 200) sent++;
+      } catch (_) {}
+    }
+    if (!mounted) return;
+    setState(() {
+      _isSending = false;
+      if (sent > 0) { _imageBytes = null; _base64Image = null; _captionController.clear(); }
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(sent > 0 ? '🔥 Streak sent to $sent friend${sent > 1 ? 's' : ''}!' : 'Could not send streak'),
+        backgroundColor: sent > 0 ? _pink : Colors.red[400],
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
   }
 
   Map<String, dynamic> get _todayTip {
@@ -177,58 +313,18 @@ class _CameraScreenState extends State<CameraScreen> {
   }
 
   Future<void> _sendQuickStreak(String message) async {
-    setState(() => _isSending = true);
-    final error = await StoryService.instance.createStory('data:text/streak;quick', message);
-    if (!mounted) return;
-    setState(() => _isSending = false);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(error == null ? '🔥 Streak sent!' : error),
-        backgroundColor: error == null ? _pink : Colors.red[400],
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
+    if (_friends.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Add friends first to send streaks! 💕'), backgroundColor: _pink),
+      );
+      return;
+    }
+    _showFriendSelectorSheet(caption: message);
   }
 
   void _shareTipAsStreak(Map<String, dynamic> tip) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
-      builder: (ctx) {
-        return Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(width: 40, height: 4, decoration: BoxDecoration(borderRadius: BorderRadius.circular(2), color: Colors.grey.shade300)),
-              const SizedBox(height: 16),
-              Text('Share "${tip['title']}" 🔥', style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 18)),
-              const SizedBox(height: 8),
-              Text('This will be posted as a story streak for your friends to see!', textAlign: TextAlign.center,
-                style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 14)),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton.icon(
-                  onPressed: () async {
-                    Navigator.pop(ctx);
-                    final caption = '${tip['title']}\nby ${tip['author']}\n\n"${tip['tip']}"';
-                    await _sendQuickStreak(caption);
-                  },
-                  style: FilledButton.styleFrom(backgroundColor: _pink, foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
-                  icon: const Icon(LucideIcons.send, size: 18),
-                  label: const Text('Share Now', style: TextStyle(fontWeight: FontWeight.w700)),
-                ),
-              ),
-              const SizedBox(height: 8),
-            ],
-          ),
-        );
-      },
-    );
+    final caption = '${tip['title']}\nby ${tip['author']}\n\n"${tip['tip']}"';
+    _sendQuickStreak(caption);
   }
 
   @override

@@ -122,8 +122,11 @@ router.post('/request', auth, async (req, res) => {
 
     res.json({ message: 'Friend request sent' });
   } catch (err) {
-    console.error('[friends/request] Error:', err.message);
-    res.status(500).json({ error: 'Could not send friend request. Please try again.' });
+    console.error('[friends/request] Error:', err.message, err.code, err.stack);
+    if (err.code === 11000) {
+      return res.status(400).json({ error: 'Friend request already exists' });
+    }
+    res.status(500).json({ error: 'Could not send friend request: ' + err.message });
   }
 });
 
