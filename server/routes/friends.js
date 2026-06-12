@@ -1,8 +1,14 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const auth = require('../lib/auth');
 const User = require('../models/User');
 const Friendship = require('../models/Friendship');
+const Notification = require('../models/Notification');
 const router = express.Router();
+
+function escapeRegex(str) {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
 
 // Search users by username
 router.get('/search', auth, async (req, res) => {
@@ -10,7 +16,7 @@ router.get('/search', auth, async (req, res) => {
     const { q } = req.query;
     if (!q) return res.json([]);
     const users = await User.find({
-      username: { $regex: q, $options: 'i' },
+      username: { $regex: escapeRegex(q), $options: 'i' },
       _id: { $ne: req.user.id }
     }).select('username').limit(10);
     res.json(users);
@@ -77,6 +83,9 @@ router.get('/', auth, async (req, res) => {
 router.post('/request', auth, async (req, res) => {
   try {
     const { targetUserId } = req.body;
+    if (!mongoose.Types.ObjectId.isValid(targetUserId)) {
+      return res.status(400).json({ error: 'Invalid user ID' });
+    }
     if (targetUserId === req.user.id) return res.status(400).json({ error: 'Cannot add yourself' });
 
     const existing = await Friendship.findOne({
@@ -93,6 +102,16 @@ router.post('/request', auth, async (req, res) => {
       recipient: targetUserId
     });
     await friendship.save();
+
+    // Create notification for the recipient
+    const requesterUser = await User.findById(req.user.id).select('username');
+    await Notification.create({
+      recipient: targetUserId,
+      sender: req.user.id,
+      type: 'friend_request',
+      message: `@${requesterUser?.username || 'Someone'} sent you a friend request`,
+      data: { friendshipId: friendship._id },
+    });
 
     res.json({ message: 'Friend request sent' });
   } catch (err) {
@@ -111,6 +130,16 @@ router.post('/respond', auth, async (req, res) => {
     if (action === 'accept') {
       friendship.status = 'accepted';
       await friendship.save();
+
+      // Notify the original requester that their request was accepted
+      const responderUser = await User.findById(req.user.id).select('username');
+      await Notification.create({
+        recipient: friendship.requester,
+        sender: req.user.id,
+        type: 'friend_accepted',
+        message: `@${responderUser?.username || 'Someone'} accepted your friend request! 🎉`,
+        data: { friendshipId: friendship._id },
+      });
     } else {
       await Friendship.deleteOne({ _id: requestId });
     }
@@ -142,6 +171,23 @@ router.get('/shared/:id', auth, async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+});
+
+// DELETE friend
+router.delete('/:friendId', auth, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const friendId = req.params.friendId;
+        await Friendship.deleteOne({
+            $or: [
+                { requester: userId, recipient: friendId, status: 'accepted' },
+                { requester: friendId, recipient: userId, status: 'accepted' },
+            ],
+        });
+        res.json({ message: 'Friend removed' });
+    } catch (err) {
+        res.status(500).json({ error: 'Could not remove friend' });
+    }
 });
 
 module.exports = router;

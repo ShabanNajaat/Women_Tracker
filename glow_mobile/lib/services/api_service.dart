@@ -187,6 +187,10 @@ class ApiService {
     return http.Response.fromStream(streamed);
   }
 
+  Future<http.Response> delete(String endpoint) async {
+    return await http.delete(Uri.parse('$baseUrl$endpoint'), headers: headers);
+  }
+
   bool get isAuthenticated => _token != null && _token!.trim().isNotEmpty;
 
   /// Returns true if the saved token is accepted by [GET /auth/profile].

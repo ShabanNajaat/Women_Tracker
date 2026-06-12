@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../services/api_service.dart';
+import '../services/partner_service.dart';
 import 'direct_message_screen.dart';
 import 'package:http/http.dart' as http;
 
@@ -587,6 +588,11 @@ class _FriendsScreenState extends State<FriendsScreen>
           mainAxisSize: MainAxisSize.min,
           children: [
             IconButton(
+              icon: Icon(LucideIcons.flame, color: Colors.orange.shade400, size: 20),
+              tooltip: 'Start Streak',
+              onPressed: () => _startStreak(id, username),
+            ),
+            IconButton(
               icon: Icon(LucideIcons.messageCircle, color: pink),
               tooltip: 'Message',
               onPressed: () => Navigator.push(
@@ -772,6 +778,27 @@ class _FriendsScreenState extends State<FriendsScreen>
                           style: TextStyle(fontWeight: FontWeight.w700)),
                     ),
                   ),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed: () {
+                        Navigator.pop(ctx);
+                        _confirmUnfriend(friendId, friendName);
+                      },
+                      style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.red.shade400,
+                          side: BorderSide(color: Colors.red.shade300),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14))),
+                      icon: Icon(LucideIcons.userMinus, color: Colors.red.shade400),
+                      label: Text('Remove Friend',
+                          style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              color: Colors.red.shade400)),
+                    ),
+                  ),
                 ],
               ),
             );
@@ -779,6 +806,83 @@ class _FriendsScreenState extends State<FriendsScreen>
         );
       },
     );
+  }
+
+  Future<void> _confirmUnfriend(String friendId, String friendName) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text('Remove Friend', style: TextStyle(fontWeight: FontWeight.w800)),
+        content: Text(
+          'Are you sure you want to remove @$friendName as a friend?',
+          style: const TextStyle(height: 1.5),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text('Cancel',
+                style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red.shade400,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+            child: const Text('Remove', style: TextStyle(fontWeight: FontWeight.w700)),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    try {
+      final api = ApiService();
+      await api.init();
+      final res = await http.delete(
+        Uri.parse('${api.baseUrl}/friends/$friendId'),
+        headers: api.headers,
+      );
+      if (!mounted) return;
+      if (res.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('@$friendName has been removed'),
+            backgroundColor: Colors.red.shade400,
+          ),
+        );
+        _fetchFriends();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not remove friend')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _startStreak(String friendId, String friendName) async {
+    final err = await PartnerService.instance.joinPartner(friendId);
+    if (!mounted) return;
+    if (err == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('🔥 Streak linked with @$friendName!'),
+          backgroundColor: const Color(0xFFFF8FC8),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(err)),
+      );
+    }
   }
 
   Widget _statColumn(String label, String value) {

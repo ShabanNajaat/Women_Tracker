@@ -9,14 +9,17 @@ import '../widgets/glow_text.dart';
 import '../widgets/mini_wellness_quiz_card.dart';
 import '../widgets/mood_board.dart';
 import '../widgets/skeleton_loader.dart';
+import '../widgets/stories_bar.dart';
 import '../services/challenge_service.dart';
 import '../services/cycle_service.dart';
+import '../services/in_app_notification_service.dart';
 import '../widgets/thirty_day_challenge_card.dart';
 import '../widgets/wellness_insights_carousel.dart';
 import '../widgets/beginner_tools_row.dart';
 import 'friends_screen.dart';
 import 'ai_forecast_screen.dart';
 import 'health_insights_screen.dart';
+import 'notifications_screen.dart';
 import 'personalization_hub_screen.dart';
 import 'settings_screen.dart';
 import 'wellness_schedules_hub_screen.dart';
@@ -46,6 +49,7 @@ class _DashboardScreenState extends State<DashboardScreen> with WidgetsBindingOb
     ChallengeService.instance.ensureLoaded().then((_) {
       if (mounted) setState(() {});
     });
+    InAppNotificationService.instance.init();
     Future<void>.delayed(const Duration(milliseconds: 520), () {
       if (mounted) setState(() => _loadingHero = false);
     });
@@ -102,6 +106,25 @@ class _DashboardScreenState extends State<DashboardScreen> with WidgetsBindingOb
                         );
                       },
                     ),
+                    ValueListenableBuilder<int>(
+                      valueListenable: InAppNotificationService.unreadCount,
+                      builder: (context, count, _) {
+                        return IconButton(
+                          tooltip: 'Notifications',
+                          icon: Badge(
+                            isLabelVisible: count > 0,
+                            label: Text('$count', style: const TextStyle(fontSize: 10)),
+                            backgroundColor: const Color(0xFFFF8FC8),
+                            child: Icon(LucideIcons.bell, color: scheme.onSurface),
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute<void>(builder: (_) => const NotificationsScreen()),
+                            );
+                          },
+                        );
+                      },
+                    ),
                     IconButton(
                       tooltip: 'Settings',
                       icon: Icon(Icons.settings_outlined, color: scheme.onSurface),
@@ -113,6 +136,8 @@ class _DashboardScreenState extends State<DashboardScreen> with WidgetsBindingOb
                     ),
                   ],
                 ),
+                const SizedBox(height: 16),
+                const StoriesBar(),
                 const SizedBox(height: 16),
                 if (_loadingHero) ...[
                   SkeletonLoader(width: double.infinity, height: 140, borderRadius: BorderRadius.circular(24)),

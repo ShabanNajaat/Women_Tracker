@@ -115,24 +115,20 @@ class _ExerciseTimerScreenState extends State<ExerciseTimerScreen> {
     HapticFeedback.heavyImpact();
     try {
       await _player.stop();
-      await _player.setReleaseMode(ReleaseMode.release);
-      await _player.play(
-        UrlSource(
-          'https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg',
-        ),
-      );
-    } catch (_) {
-      if (!kIsWeb) {
-        await SystemSound.play(SystemSoundType.alert);
+      await _player.setReleaseMode(ReleaseMode.loop);
+      await _player.play(AssetSource('sounds/timer_beep.wav'));
+      // Stop looping after 3 seconds
+      Future<void>.delayed(const Duration(seconds: 3), () {
+        _player.stop();
+      });
+    } catch (e) {
+      debugPrint('Audio play failed: $e');
+      // Fallback: system beeps with haptic
+      for (int i = 0; i < 3; i++) {
+        await Future<void>.delayed(Duration(milliseconds: i * 350));
+        HapticFeedback.heavyImpact();
+        if (!kIsWeb) SystemSound.play(SystemSoundType.alert);
       }
-    }
-    if (!kIsWeb) {
-      Future<void>.delayed(const Duration(milliseconds: 350), () {
-        SystemSound.play(SystemSoundType.alert);
-      });
-      Future<void>.delayed(const Duration(milliseconds: 700), () {
-        SystemSound.play(SystemSoundType.alert);
-      });
     }
   }
 
