@@ -24,7 +24,8 @@ class _StoriesBarState extends State<StoriesBar> {
     return ValueListenableBuilder<int>(
       valueListenable: StoryService.revision,
       builder: (context, _, __) {
-        final groups = StoryService.instance.groupedFeed;
+        final groups = StoryService.instance.friendGroupedFeed;
+        final myStories = StoryService.instance.myStories;
         return SizedBox(
           height: 100,
           child: ListView.builder(
@@ -32,7 +33,7 @@ class _StoriesBarState extends State<StoriesBar> {
             padding: const EdgeInsets.symmetric(horizontal: 8),
             itemCount: groups.length + 1, // +1 for "Your Story"
             itemBuilder: (ctx, i) {
-              if (i == 0) return _buildAddStory(ctx, scheme);
+              if (i == 0) return _buildAddStory(ctx, scheme, myStories);
               final group = groups[i - 1];
               return _buildStoryCircle(ctx, group, scheme);
             },
@@ -42,9 +43,30 @@ class _StoriesBarState extends State<StoriesBar> {
     );
   }
 
-  Widget _buildAddStory(BuildContext context, ColorScheme scheme) {
+  Widget _buildAddStory(BuildContext context, ColorScheme scheme, List<Map<String, dynamic>> myStories) {
+    final hasStories = myStories.isNotEmpty;
     return GestureDetector(
       onTap: () {
+        if (hasStories) {
+          // Show own stories
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => StoryViewerScreen(
+                stories: myStories,
+                initialIndex: 0,
+                username: 'Your story',
+              ),
+            ),
+          );
+        } else {
+          // Open camera to create new story
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(builder: (_) => const CreateStoryScreen()),
+          );
+        }
+      },
+      onLongPress: () {
+        // Long press always opens create new story
         Navigator.of(context).push(
           MaterialPageRoute<void>(builder: (_) => const CreateStoryScreen()),
         );
@@ -61,17 +83,42 @@ class _StoriesBarState extends State<StoriesBar> {
                   height: 64,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: scheme.surfaceContainerHighest.withValues(alpha: 0.4),
-                    border: Border.all(
-                      color: scheme.outline.withValues(alpha: 0.2),
-                      width: 2,
-                    ),
+                    gradient: hasStories
+                        ? const LinearGradient(
+                            colors: [Color(0xFFFF8FC8), Color(0xFFE0569A)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          )
+                        : null,
+                    color: hasStories ? null : scheme.surfaceContainerHighest.withValues(alpha: 0.4),
+                    border: hasStories
+                        ? null
+                        : Border.all(
+                            color: scheme.outline.withValues(alpha: 0.2),
+                            width: 2,
+                          ),
                   ),
-                  child: Icon(
-                    Icons.person_outline_rounded,
-                    color: scheme.onSurfaceVariant,
-                    size: 30,
-                  ),
+                  child: hasStories
+                      ? Center(
+                          child: Container(
+                            width: 58,
+                            height: 58,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: scheme.surface,
+                            ),
+                            child: Icon(
+                              Icons.person_outline_rounded,
+                              color: const Color(0xFFFF8FC8),
+                              size: 30,
+                            ),
+                          ),
+                        )
+                      : Icon(
+                          Icons.person_outline_rounded,
+                          color: scheme.onSurfaceVariant,
+                          size: 30,
+                        ),
                 ),
                 Positioned(
                   bottom: 0,

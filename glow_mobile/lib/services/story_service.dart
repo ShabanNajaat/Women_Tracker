@@ -1,12 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'api_service.dart';
 
 class StoryService {
   StoryService._();
   static final StoryService instance = StoryService._();
   static final ValueNotifier<int> revision = ValueNotifier<int>(0);
+
+  String? _currentUserId;
+  String? get currentUserId => _currentUserId;
 
   List<Map<String, dynamic>> _feedStories = [];
   List<Map<String, dynamic>> get feedStories => _feedStories;
@@ -35,6 +39,11 @@ class StoryService {
   Future<void> refreshFeed() async {
     if (!ApiService().isAuthenticated) return;
     try {
+      // Load current user ID
+      if (_currentUserId == null) {
+        final prefs = await SharedPreferences.getInstance();
+        _currentUserId = prefs.getString('glow-user-id');
+      }
       final res = await ApiService().get('/stories/feed');
       if (res.statusCode == 200) {
         final list = jsonDecode(res.body) as List? ?? [];
@@ -42,6 +51,22 @@ class StoryService {
         revision.value++;
       }
     } catch (_) {}
+  }
+
+  /// Stories by the current user only
+  List<Map<String, dynamic>> get myStories {
+    if (_currentUserId == null) return [];
+    return _feedStories.where((s) {
+      final user = s['user'];
+      if (user == null) return false;
+      final uid = user['_id']?.toString() ?? user['id']?.toString() ?? '';
+      return uid == _currentUserId;
+    }).toList();
+  }
+
+  /// Grouped feed excluding the current user's stories
+  List<Map<String, dynamic>> get friendGroupedFeed {
+    return groupedFeed.where((g) => g['userId'] != _currentUserId).toList();
   }
 
   Future<String?> createStory(String imageData, String caption) async {

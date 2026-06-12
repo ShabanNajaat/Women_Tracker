@@ -109,7 +109,7 @@ router.post('/request', auth, async (req, res) => {
       recipient: targetUserId,
       sender: req.user.id,
       type: 'friend_request',
-      message: `@${requesterUser?.username || 'Someone'} sent you a friend request`,
+      message: `@${(requesterUser && requesterUser.username) || 'Someone'} sent you a friend request`,
       data: { friendshipId: friendship._id },
     });
 
@@ -137,7 +137,7 @@ router.post('/respond', auth, async (req, res) => {
         recipient: friendship.requester,
         sender: req.user.id,
         type: 'friend_accepted',
-        message: `@${responderUser?.username || 'Someone'} accepted your friend request! 🎉`,
+        message: `@${(responderUser && responderUser.username) || 'Someone'} accepted your friend request! 🎉`,
         data: { friendshipId: friendship._id },
       });
     } else {

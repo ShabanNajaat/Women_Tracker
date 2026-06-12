@@ -24,6 +24,15 @@ class _CreateStoryScreenState extends State<CreateStoryScreen> {
   bool _isPosting = false;
 
   @override
+  void initState() {
+    super.initState();
+    // Auto-open camera on screen launch
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _pickImage(ImageSource.camera);
+    });
+  }
+
+  @override
   void dispose() {
     _captionController.dispose();
     super.dispose();
