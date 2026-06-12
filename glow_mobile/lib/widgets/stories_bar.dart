@@ -110,21 +110,26 @@ class _StoriesBarState extends State<StoriesBar> {
 
   Widget _buildStoryCircle(
     BuildContext context,
-    StoryGroup group,
+    Map<String, dynamic> group,
     ColorScheme scheme,
   ) {
-    final username = group.username;
+    final username = group['username']?.toString() ?? '';
     final displayName =
         username.length > 8 ? username.substring(0, 8) : username;
     final initial =
         username.isNotEmpty ? username[0].toUpperCase() : '?';
-    final bool viewed = group.allViewed;
+    final stories = (group['stories'] as List?)?.cast<Map<String, dynamic>>() ?? [];
+    final bool viewed = stories.isEmpty;
 
     return GestureDetector(
       onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute<void>(
-            builder: (_) => StoryViewerScreen(group: group),
+            builder: (_) => StoryViewerScreen(
+              stories: stories,
+              initialIndex: 0,
+              username: username,
+            ),
           ),
         );
       },
