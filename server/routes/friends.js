@@ -83,6 +83,9 @@ router.get('/', auth, async (req, res) => {
 router.post('/request', auth, async (req, res) => {
   try {
     const { targetUserId } = req.body;
+    if (!targetUserId) {
+      return res.status(400).json({ error: 'Target user ID is required' });
+    }
     if (!mongoose.Types.ObjectId.isValid(targetUserId)) {
       return res.status(400).json({ error: 'Invalid user ID' });
     }
@@ -103,19 +106,24 @@ router.post('/request', auth, async (req, res) => {
     });
     await friendship.save();
 
-    // Create notification for the recipient
-    const requesterUser = await User.findById(req.user.id).select('username');
-    await Notification.create({
-      recipient: targetUserId,
-      sender: req.user.id,
-      type: 'friend_request',
-      message: `@${(requesterUser && requesterUser.username) || 'Someone'} sent you a friend request`,
-      data: { friendshipId: friendship._id },
-    });
+    // Create notification (non-blocking — don't fail friend request if this errors)
+    try {
+      const requesterUser = await User.findById(req.user.id).select('username');
+      await Notification.create({
+        recipient: targetUserId,
+        sender: req.user.id,
+        type: 'friend_request',
+        message: `@${(requesterUser && requesterUser.username) || 'Someone'} sent you a friend request`,
+        data: { friendshipId: friendship._id },
+      });
+    } catch (notifErr) {
+      console.warn('[friends] Could not create notification:', notifErr.message);
+    }
 
     res.json({ message: 'Friend request sent' });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('[friends/request] Error:', err.message);
+    res.status(500).json({ error: 'Could not send friend request. Please try again.' });
   }
 });
 
@@ -131,22 +139,27 @@ router.post('/respond', auth, async (req, res) => {
       friendship.status = 'accepted';
       await friendship.save();
 
-      // Notify the original requester that their request was accepted
-      const responderUser = await User.findById(req.user.id).select('username');
-      await Notification.create({
-        recipient: friendship.requester,
-        sender: req.user.id,
-        type: 'friend_accepted',
-        message: `@${(responderUser && responderUser.username) || 'Someone'} accepted your friend request! 🎉`,
-        data: { friendshipId: friendship._id },
-      });
+      // Notify the original requester (non-blocking)
+      try {
+        const responderUser = await User.findById(req.user.id).select('username');
+        await Notification.create({
+          recipient: friendship.requester,
+          sender: req.user.id,
+          type: 'friend_accepted',
+          message: `@${(responderUser && responderUser.username) || 'Someone'} accepted your friend request! 🎉`,
+          data: { friendshipId: friendship._id },
+        });
+      } catch (notifErr) {
+        console.warn('[friends] Could not create notification:', notifErr.message);
+      }
     } else {
       await Friendship.deleteOne({ _id: requestId });
     }
 
     res.json({ message: `Request ${action}ed` });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('[friends/respond] Error:', err.message);
+    res.status(500).json({ error: 'Could not respond to request. Please try again.' });
   }
 });
 
