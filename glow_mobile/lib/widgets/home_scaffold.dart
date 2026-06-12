@@ -6,6 +6,7 @@ import '../screens/calendar_screen.dart';
 import '../screens/glow_space_screen.dart';
 import '../screens/her_cycle_screen.dart';
 import '../screens/chat_screen.dart';
+import '../screens/camera_screen.dart';
 import '../screens/journal_screen.dart';
 import '../screens/community_screen.dart';
 import '../screens/settings_screen.dart';
@@ -49,6 +50,7 @@ class _HomeScaffoldState extends State<HomeScaffold> {
     'Glow Space',
     'Her Cycle',
     'Chat',
+    'Camera',
     'Journal',
     'Community',
   ];
@@ -59,12 +61,13 @@ class _HomeScaffoldState extends State<HomeScaffold> {
         GlowSpaceScreen(key: ValueKey('tab_glow_$epoch')),
         HerCycleScreen(key: ValueKey('tab_cycle_$epoch')),
         ChatScreen(key: ValueKey('tab_chat_$epoch')),
+        CameraScreen(key: ValueKey('tab_camera_$epoch')),
         JournalScreen(key: ValueKey('tab_journal_$epoch')),
         CommunityScreen(key: ValueKey('tab_community_$epoch')),
       ];
 
   void _onItemTapped(int index) {
-    if (index < 0 || index >= 7) return;
+    if (index < 0 || index >= 8) return;
     if (_selectedIndex != index) {
       setState(() => _selectedIndex = index);
     }

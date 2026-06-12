@@ -106,6 +106,10 @@ class LeftSidebar extends StatelessWidget {
           label: Text('Chat'),
         ),
         NavigationRailDestination(
+          icon: Icon(LucideIcons.camera),
+          label: Text('Camera'),
+        ),
+        NavigationRailDestination(
           icon: Icon(LucideIcons.edit3),
           label: Text('Journal'),
         ),

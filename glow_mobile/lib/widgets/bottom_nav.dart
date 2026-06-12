@@ -20,6 +20,7 @@ class BottomNav extends StatelessWidget {
     (LucideIcons.sparkles, 'Glow'),
     (LucideIcons.refreshCw, 'Cycle'),
     (LucideIcons.messageCircle, 'Chat'),
+    (LucideIcons.camera, 'Camera'),
     (LucideIcons.edit3, 'Journal'),
     (LucideIcons.users, 'Community'),
   ];
