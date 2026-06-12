@@ -45,40 +45,40 @@ class _StoriesBarState extends State<StoriesBar> {
 
   Widget _buildAddStory(BuildContext context, ColorScheme scheme, List<Map<String, dynamic>> myStories) {
     final hasStories = myStories.isNotEmpty;
-    return GestureDetector(
-      onTap: () {
-        if (hasStories) {
-          // Show own stories
-          Navigator.of(context).push(
-            MaterialPageRoute<void>(
-              builder: (_) => StoryViewerScreen(
-                stories: myStories,
-                initialIndex: 0,
-                username: 'Your story',
-              ),
-            ),
-          );
-        } else {
-          // Open camera to create new story
-          Navigator.of(context).push(
-            MaterialPageRoute<void>(builder: (_) => const CreateStoryScreen()),
-          );
-        }
-      },
-      onLongPress: () {
-        // Long press always opens create new story
-        Navigator.of(context).push(
-          MaterialPageRoute<void>(builder: (_) => const CreateStoryScreen()),
-        );
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 6),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Stack(
-              children: [
-                Container(
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 6),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  if (hasStories) {
+                    // Show own stories
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => StoryViewerScreen(
+                          stories: myStories,
+                          initialIndex: 0,
+                          username: 'Your story',
+                        ),
+                      ),
+                    );
+                  } else {
+                    // Open camera to create new story
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(builder: (_) => const CreateStoryScreen()),
+                    );
+                  }
+                },
+                onLongPress: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute<void>(builder: (_) => const CreateStoryScreen()),
+                  );
+                },
+                child: Container(
                   width: 64,
                   height: 64,
                   decoration: BoxDecoration(
@@ -120,25 +120,45 @@ class _StoriesBarState extends State<StoriesBar> {
                           size: 30,
                         ),
                 ),
-                Positioned(
-                  bottom: 0,
-                  right: 0,
+              ),
+              Positioned(
+                bottom: -2,
+                right: -2,
+                child: GestureDetector(
+                  onTap: () {
+                    // ALWAYS open create new story
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(builder: (_) => const CreateStoryScreen()),
+                    );
+                  },
+                  behavior: HitTestBehavior.opaque,
                   child: Container(
-                    width: 22,
-                    height: 22,
-                    decoration: const BoxDecoration(
+                    width: 24,
+                    height: 24,
+                    decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      gradient: LinearGradient(
-                        colors: [Color(0xFFFF8FC8), Color(0xFFE0569A)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
+                      color: scheme.surface,
+                    ),
+                    child: Center(
+                      child: Container(
+                        width: 20,
+                        height: 20,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: LinearGradient(
+                            colors: [Color(0xFFFF8FC8), Color(0xFFE0569A)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                        ),
+                        child: const Icon(Icons.add, color: Colors.white, size: 14),
                       ),
                     ),
-                    child: const Icon(Icons.add, color: Colors.white, size: 14),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
+          ),
             const SizedBox(height: 6),
             Text(
               'Your story',
