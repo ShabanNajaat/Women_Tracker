@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 import '../services/in_app_notification_service.dart';
+import '../services/api_service.dart';
 import '../widgets/app_backdrop.dart';
 import '../widgets/glow_page_app_bar.dart';
 

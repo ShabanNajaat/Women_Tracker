@@ -171,8 +171,7 @@ class _StoriesBarState extends State<StoriesBar> {
             ),
           ],
         ),
-      ),
-    );
+      );
   }
 
   Widget _buildStoryCircle(
