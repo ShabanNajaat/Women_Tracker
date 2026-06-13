@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../services/socket_service.dart';
@@ -28,7 +29,7 @@ class _DirectMessageScreenState extends State<DirectMessageScreen> {
     try {
       final res = await ApiService().get('/messages/${widget.friendId}');
       if (res.statusCode == 200) {
-        final data = res.data;
+        final data = jsonDecode(res.body);
         if (data is Map && data['messages'] is List) {
           if (!mounted) return;
           setState(() {
