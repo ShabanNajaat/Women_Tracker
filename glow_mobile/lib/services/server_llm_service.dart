@@ -46,8 +46,7 @@ class ServerLLMService {
               final bits = <String>[
                 if (!configured)
                   'Basic mode only — set OPENAI_API_KEY on Render and redeploy for full AI answers.',
-                if (configured && provider == 'openai')
-                  'Full AI active (OpenAI).',
+
                 if (configured && provider.isNotEmpty && provider != 'openai')
                   'Using $provider for replies.',
                 if (notice != null && notice.isNotEmpty) notice,

@@ -157,18 +157,26 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
     });
   }
 
-  void _sendAsStreak() {
+  Future<void> _sendAsStreak() async {
     if (_capturedBase64 == null && _captionController.text.trim().isEmpty) return;
+    
+    // Refresh friends list to ensure we have the latest accepted friends
+    await _loadFriends();
+    
     if (_friends.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Add friends first to send streaks! 💕'), backgroundColor: _pink),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Add friends first to send streaks! 💕'), backgroundColor: _pink),
+        );
+      }
       return;
     }
-    _showFriendSelectorSheet(
-      imageData: _capturedBase64,
-      caption: _captionController.text.trim().isEmpty ? '🔥 Streak!' : _captionController.text.trim(),
-    );
+    if (mounted) {
+      _showFriendSelectorSheet(
+        imageData: _capturedBase64,
+        caption: _captionController.text.trim().isEmpty ? '🔥 Streak!' : _captionController.text.trim(),
+      );
+    }
   }
 
   void _showFriendSelectorSheet({String? imageData, required String caption}) {

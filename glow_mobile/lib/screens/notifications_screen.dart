@@ -26,6 +26,21 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     await InAppNotificationService.instance.refresh();
   }
 
+  Future<void> _respondToRequest(String requestId, String action) async {
+    try {
+      await ApiService().post('/friends/respond', body: {
+        'requestId': requestId,
+        'action': action,
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(action == 'accept' ? 'Friend request accepted!' : 'Request declined')),
+        );
+      }
+      _onRefresh();
+    } catch (_) {}
+  }
+
   String _relativeTime(String? iso) {
     if (iso == null) return '';
     final dt = DateTime.tryParse(iso);
@@ -176,7 +191,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
   Widget _notificationTile(Map<String, dynamic> n, ColorScheme scheme) {
     final isRead = n['read'] == true;
-    final sender = n['sender'] as Map<String, dynamic>? ?? {};
+    final senderRaw = n['sender'];
+    final sender = senderRaw is Map ? Map<String, dynamic>.from(senderRaw) : <String, dynamic>{};
     final username = sender['username']?.toString() ?? 'Someone';
     final initial = username.isNotEmpty ? username[0].toUpperCase() : '?';
     final message = n['message']?.toString() ?? '';
@@ -282,6 +298,41 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                       color: scheme.onSurfaceVariant.withValues(alpha: 0.7),
                     ),
                   ),
+                  if (type == 'friend_request') ...[
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        FilledButton(
+                          onPressed: () {
+                            final data = n['data'];
+                            final fId = data is Map ? data['friendshipId'] : null;
+                            if (fId != null) _respondToRequest(fId.toString(), 'accept');
+                          },
+                          style: FilledButton.styleFrom(
+                            backgroundColor: _pink,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            minimumSize: const Size(0, 36),
+                          ),
+                          child: const Text('Accept', style: TextStyle(fontWeight: FontWeight.w700)),
+                        ),
+                        const SizedBox(width: 8),
+                        TextButton(
+                          onPressed: () {
+                            final data = n['data'];
+                            final fId = data is Map ? data['friendshipId'] : null;
+                            if (fId != null) _respondToRequest(fId.toString(), 'reject');
+                          },
+                          style: TextButton.styleFrom(
+                            foregroundColor: scheme.onSurfaceVariant,
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            minimumSize: const Size(0, 36),
+                          ),
+                          child: const Text('Decline', style: TextStyle(fontWeight: FontWeight.w600)),
+                        ),
+                      ],
+                    ),
+                  ],
                 ],
               ),
             ),
