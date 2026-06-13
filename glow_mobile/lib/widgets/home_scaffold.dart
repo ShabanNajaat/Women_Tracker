@@ -91,7 +91,7 @@ class _HomeScaffoldState extends State<HomeScaffold> {
         final pages = _pagesForSession(epoch);
         return Scaffold(
           backgroundColor: Colors.transparent,
-          appBar: isWide
+          appBar: isWide || _selectedIndex == 5
               ? null
               : AppBar(
                   backgroundColor: Theme.of(context).appBarTheme.backgroundColor,

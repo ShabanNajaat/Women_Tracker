@@ -348,7 +348,7 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
                       width: 80, height: 80,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white, width: 5),
+                        border: Border.all(color: _pink, width: 5),
                       ),
                       child: Center(
                         child: Container(
