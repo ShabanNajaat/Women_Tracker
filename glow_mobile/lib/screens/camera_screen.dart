@@ -356,17 +356,20 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
                   GestureDetector(
                     onTap: _capturePhoto,
                     child: Container(
-                      width: 84, height: 84,
+                      width: 80, height: 80,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white, width: 6),
+                        border: Border.all(color: Colors.white, width: 4),
+                        boxShadow: [
+                          BoxShadow(color: Colors.black26, blurRadius: 8),
+                        ],
                       ),
                       child: Center(
                         child: Container(
-                          width: 64, height: 64,
+                          width: 66, height: 66,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: Colors.white.withValues(alpha: 0.25),
+                            color: _pink,
                           ),
                         ),
                       ),

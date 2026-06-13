@@ -142,6 +142,13 @@ router.post('/respond', auth, async (req, res) => {
       friendship.status = 'accepted';
       await friendship.save();
 
+      try {
+        await Notification.updateOne(
+          { recipient: req.user.id, type: 'friend_request', 'data.friendshipId': friendship._id },
+          { $set: { type: 'system', message: 'You are friends now! 🎉' } }
+        );
+      } catch (e) {}
+
       // Notify the original requester (non-blocking)
       try {
         const responderUser = await User.findById(req.user.id).select('username');
@@ -157,6 +164,11 @@ router.post('/respond', auth, async (req, res) => {
       }
     } else {
       await Friendship.deleteOne({ _id: requestId });
+      try {
+        await Notification.deleteOne(
+          { recipient: req.user.id, type: 'friend_request', 'data.friendshipId': requestId }
+        );
+      } catch (e) {}
     }
 
     res.json({ message: `Request ${action}ed` });
