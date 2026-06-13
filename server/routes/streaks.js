@@ -36,6 +36,15 @@ router.post('/send', auth, async (req, res) => {
       sentAt: new Date().toISOString(),
     };
 
+    // Create a direct message for the chat feed
+    const DirectMessage = require('../models/DirectMessage');
+    const msgText = imageData ? `📸 ${caption || 'Streak!'}` : `🔥 ${caption || 'Streak!'}`;
+    await DirectMessage.create({
+      sender: req.user.id,
+      recipient: friendId,
+      text: msgText
+    });
+
     res.json({ message: 'Streak sent!' });
   } catch (err) {
     console.error('[streaks/send] Error:', err.message);

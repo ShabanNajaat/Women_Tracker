@@ -93,13 +93,15 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
     }
     final ctrl = CameraController(
       _cameras[_selectedCameraIdx],
-      ResolutionPreset.high,
+      ResolutionPreset.medium, // Changed to medium to prevent memory crashes on mobile browsers
       enableAudio: false,
       imageFormatGroup: ImageFormatGroup.jpeg,
     );
     _controller = ctrl;
     try {
       await ctrl.initialize();
+      // Delay to ensure video element is ready on web Safari
+      await Future.delayed(const Duration(milliseconds: 300));
       if (mounted) setState(() => _isCameraInitialized = true);
     } catch (e) {
       debugPrint('Camera controller error: $e');

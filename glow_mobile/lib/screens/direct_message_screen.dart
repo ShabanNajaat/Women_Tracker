@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../services/socket_service.dart';
+import '../services/api_service.dart';
 
 class DirectMessageScreen extends StatefulWidget {
   final String friendId;
@@ -20,6 +21,30 @@ class _DirectMessageScreenState extends State<DirectMessageScreen> {
   void initState() {
     super.initState();
     _setupSocketListeners();
+    _loadHistory();
+  }
+
+  Future<void> _loadHistory() async {
+    try {
+      final res = await ApiService().get('/messages/${widget.friendId}');
+      if (res.statusCode == 200) {
+        final data = res.data;
+        if (data is Map && data['messages'] is List) {
+          if (!mounted) return;
+          setState(() {
+            _messages.clear();
+            for (var m in data['messages']) {
+              _messages.add({
+                'role': m['sender'] == widget.friendId ? 'friend' : 'me',
+                'text': m['text'],
+              });
+            }
+          });
+        }
+      }
+    } catch (e) {
+      debugPrint('Error loading chat history: $e');
+    }
   }
 
   void _setupSocketListeners() {

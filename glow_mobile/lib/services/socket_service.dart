@@ -21,13 +21,8 @@ class SocketService extends ChangeNotifier {
     final token = await _api.getToken();
     if (token == null) return;
 
-    // Use the ApiService base URL but replace http/https with ws/wss if needed, 
-    // or just pass the HTTP URL and socket.io client handles it.
-    final baseUrl = const String.fromEnvironment('API_BASE_URL',
-        defaultValue: 'http://localhost:8081/api');
-    
     // We want the domain without the /api suffix for the socket server
-    final socketUrl = baseUrl.replaceAll(RegExp(r'/api$'), '');
+    final socketUrl = _api.baseUrl.replaceAll(RegExp(r'/api$'), '');
 
     _socket = IO.io(socketUrl, <String, dynamic>{
       'transports': ['websocket'],

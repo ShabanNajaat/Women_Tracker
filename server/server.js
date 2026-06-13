@@ -180,5 +180,6 @@ app.use('/api/admin', require('./routes/admin'));
 app.use('/api/notifications', require('./routes/notifications'));
 app.use('/api/stories', require('./routes/stories'));
 app.use('/api/streaks', require('./routes/streaks'));
+app.use('/api/messages', require('./routes/messages'));
 
 const PORT = Number(process.env.PORT) || 8081;
