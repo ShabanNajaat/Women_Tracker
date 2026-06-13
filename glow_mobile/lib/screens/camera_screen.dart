@@ -71,7 +71,10 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
   Future<void> _initCamera() async {
     try {
       _cameras = await availableCameras();
-      if (_cameras.isEmpty) return;
+      if (_cameras.isEmpty) {
+        if (mounted) setState(() => _isCameraPermissionDenied = true);
+        return;
+      }
       // Prefer front camera for selfie streaks
       _selectedCameraIdx = _cameras.indexWhere((c) => c.lensDirection == CameraLensDirection.front);
       if (_selectedCameraIdx == -1) _selectedCameraIdx = 0;
@@ -206,9 +209,9 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
                     itemCount: _friends.length,
                     separatorBuilder: (_, __) => const SizedBox(width: 14),
                     itemBuilder: (_, i) {
-                      final f = _friends[i];
+                       final f = _friends[i];
                       final name = f['username']?.toString() ?? 'Friend';
-                      final fId = f['_id']?.toString() ?? '';
+                      final fId = (f['id'] ?? f['_id'])?.toString() ?? '';
                       final initial = name.isNotEmpty ? name[0].toUpperCase() : '?';
                       final selected = selectedIds.contains(fId);
                       return GestureDetector(
@@ -349,25 +352,28 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Shutter
+                   // Shutter
                   GestureDetector(
                     onTap: _capturePhoto,
                     child: Container(
-                      width: 80, height: 80,
+                      width: 84, height: 84,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        border: Border.all(color: _pink, width: 5),
+                        border: Border.all(color: Colors.white, width: 6),
                       ),
                       child: Center(
                         child: Container(
-                          width: 62, height: 62,
-                          decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.white),
+                          width: 64, height: 64,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white.withValues(alpha: 0.25),
+                          ),
                         ),
                       ),
                     ),
                   ),
                   const SizedBox(height: 12),
-                  const Text('Tap to capture', style: TextStyle(color: Colors.white70, fontSize: 13)),
+                  const Text('Tap to capture', style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.bold)),
                 ],
               ),
             ),
@@ -377,16 +383,40 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
     );
   }
 
-  Widget _buildPermissionDeniedView() {
-    return const Center(
+   Widget _buildPermissionDeniedView() {
+    return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(LucideIcons.cameraOff, color: Colors.white54, size: 56),
-          SizedBox(height: 16),
-          Text('Camera permission required', style: TextStyle(color: Colors.white70, fontSize: 16)),
-          SizedBox(height: 8),
-          Text('Please allow camera access in your browser', style: TextStyle(color: Colors.white38, fontSize: 13)),
+          const Icon(LucideIcons.cameraOff, color: Colors.white54, size: 56),
+          const SizedBox(height: 16),
+          const Text('Camera Access Required', style: TextStyle(color: Colors.white70, fontSize: 18, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 8),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 32),
+            child: Text(
+              'Please allow camera permission in your browser or settings, then click Retry.',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.white38, fontSize: 13, height: 1.5),
+            ),
+          ),
+          const SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: () {
+              setState(() {
+                _isCameraPermissionDenied = false;
+                _isCameraInitialized = false;
+              });
+              _initCamera();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: _pink,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            child: const Text('Retry', style: TextStyle(fontWeight: FontWeight.bold)),
+          ),
         ],
       ),
     );
