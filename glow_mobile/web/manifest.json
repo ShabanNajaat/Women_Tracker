@@ -1,7 +1,7 @@
 {
     "name": "Glow Wellness",
     "short_name": "Glow",
-    "start_url": ".",
+    "start_url": "/Women_Tracker/",
     "display": "standalone",
     "background_color": "#FFF8FB",
     "theme_color": "#D94F8C",
