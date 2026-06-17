@@ -12,7 +12,9 @@ abstract final class GlowWebLinks {
       return _envOrigin.trim().replaceAll(RegExp(r'/$'), '');
     }
     if (kIsWeb) {
-      return Uri.base.origin;
+      String path = Uri.base.path;
+      if (path.endsWith('index.html')) path = path.replaceAll('index.html', '');
+      return '${Uri.base.origin}$path'.replaceAll(RegExp(r'/$'), '');
     }
     return _defaultOrigin;
   }
