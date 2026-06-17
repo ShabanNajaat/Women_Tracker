@@ -1021,6 +1021,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
           applicationVersion: '1.0.0',
           applicationLegalese: 'For wellness tracking and education only — not a medical device.',
         ),
+        const SizedBox(height: 10),
+        OutlinedButton.icon(
+          onPressed: () {
+            Navigator.of(context).pushNamed('/admin');
+          },
+          icon: const Icon(Icons.admin_panel_settings_outlined),
+          label: const Text('Admin Dashboard'),
+          style: OutlinedButton.styleFrom(
+            minimumSize: const Size(double.infinity, 48),
+            alignment: Alignment.centerLeft,
+          ),
+        ),
       ],
     );
   }
